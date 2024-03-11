@@ -1,6 +1,6 @@
 package io.muzoo.ssc.project.backend.config;
 
-import io.muzoo.ssc.project.backend.OurUserDetailsService;
+import io.muzoo.ssc.project.backend.auth.OurUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
