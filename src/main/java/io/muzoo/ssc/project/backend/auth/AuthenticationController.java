@@ -1,11 +1,9 @@
 package io.muzoo.ssc.project.backend.auth;
 
 import io.muzoo.ssc.project.backend.SimpleResponseDTO;
-import io.muzoo.ssc.project.backend.util.Ajaxutils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +24,10 @@ public class AuthenticationController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof org.springframework.security.core.userdetails.User) {
+                request.logout();
+            }
             request.login(username, password);
             return SimpleResponseDTO.builder().success(true).message("Login Successful").build();
         } catch (ServletException e) {
