@@ -39,7 +39,7 @@ public class WebSecurityConfig {
 		// Allows for root and /api/login and /api/logout
 		http.authorizeHttpRequests((authorizeHttpRequests) ->
 				authorizeHttpRequests
-						.requestMatchers("/", "/api/login", "/api/logout")
+						.requestMatchers("/", "/api/login", "/api/logout", "/api/whoami")
 						.permitAll()
 		);
 
@@ -100,7 +100,6 @@ public class WebSecurityConfig {
 			// Outputs JSON message.
 			String ajaxJson = Ajaxutils.convertToString(SimpleResponseDTO.builder()
 					.success(false).message("You do not have access to this page").build());
-
 			response.setStatus(403);
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
