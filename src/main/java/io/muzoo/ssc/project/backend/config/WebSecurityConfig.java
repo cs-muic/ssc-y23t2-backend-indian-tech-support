@@ -1,6 +1,8 @@
 package io.muzoo.ssc.project.backend.config;
 
+import io.muzoo.ssc.project.backend.SimpleResponseDTO;
 import io.muzoo.ssc.project.backend.auth.OurUserDetailsService;
+import io.muzoo.ssc.project.backend.util.Ajaxutils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -95,9 +97,14 @@ public class WebSecurityConfig {
 		public void commence(HttpServletRequest request,
 							 HttpServletResponse response,
 							 AuthenticationException authException) throws IOException, ServletException {
-			// Output JSON message. We are temporarily just printing out a string
-			response.getWriter().println("You do not have access to this page");
+			// Outputs JSON message.
+			String ajaxJson = Ajaxutils.convertToString(SimpleResponseDTO.builder()
+					.success(false).message("You do not have access to this page").build());
 
+			response.setStatus(403);
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("application/json");
+			response.getWriter().println(ajaxJson);
 		}
 	}
 }
