@@ -31,7 +31,7 @@ public class AuthenticationController {
             request.login(username, password);
             return SimpleResponseDTO.builder().success(true).message("Login Successful").build();
         } catch (ServletException e) {
-            return SimpleResponseDTO.builder().success(false).message("Incorrect username/password").build();
+            return SimpleResponseDTO.builder().success(false).message(e.getMessage()).build();
         }
     }
 
@@ -42,7 +42,7 @@ public class AuthenticationController {
             request.logout();
             return SimpleResponseDTO.builder().success(true).message("Logout Successful").build();
         } catch (ServletException e){
-            return SimpleResponseDTO.builder().success(true).message("Logout Failed").build();
+            return SimpleResponseDTO.builder().success(true).message(e.getMessage()).build();
         }
     }
 }
