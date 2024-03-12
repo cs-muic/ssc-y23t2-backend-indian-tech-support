@@ -17,6 +17,7 @@ public class InitApplicationRunner implements ApplicationRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Creates an admin user in the database when the application starts for the first time.
     @Override
     public void run(ApplicationArguments args) throws Exception {
         User admin = userRepository.findByUsername("admin");
