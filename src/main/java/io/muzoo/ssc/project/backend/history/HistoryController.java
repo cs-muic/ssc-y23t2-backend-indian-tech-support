@@ -1,5 +1,6 @@
 package io.muzoo.ssc.project.backend.history;
 
+import com.google.gson.Gson;
 import io.muzoo.ssc.project.backend.Transaction.Transaction;
 import io.muzoo.ssc.project.backend.Transaction.TransactionRepository;
 import io.muzoo.ssc.project.backend.User.User;
@@ -21,6 +22,8 @@ public class HistoryController {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    Gson gson = new Gson();
+
     /**
      * Make sure that all API path begins with /api. This ends up being useful for when we do proxy
      */
@@ -31,12 +34,16 @@ public class HistoryController {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal != null && principal instanceof org.springframework.security.core.userdetails.User) {
                 // user is logged in
-                org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) principal;
+                org.springframework.security.core.userdetails.User user =
+                        (org.springframework.security.core.userdetails.User) principal;
                 User u = userRepository.findByUsername(user.getUsername());
-                return HistoryDTO.builder()
-                        .loggedIn(true)
-                        .transactions(transactionRepository.findAllByUserId(u.getId()))
-                        .build();
+                HistoryDTO output = HistoryDTO.builder().build();
+                output.setLoggedIn(true);
+//                output.setTransactions(transactionRepository.findAll());
+                System.out.println(transactionRepository.findAll());
+                output.setTransactions(transactionRepository.findAllByUserId(u.getId()));
+//                output.setTransactions(gson.toJson(transactionRepository.findAllByUserId(u.getId())));
+                return output;
             }
         } catch (Exception e) {
             // Ajarn just left this blank lmao

@@ -40,10 +40,9 @@ public class InitApplicationRunner implements ApplicationRunner {
             user.setDisplayName("Admin");
             user.setRole("ADMIN");
             userRepository.save(user);
-
             for (int index = 1; index < 15; index++) {
                 Transaction transaction = new Transaction();
-                transaction.setUserId(1);
+                transaction.setUserId(userRepository.findByUsername("admin").getId());
                 transaction.setTagId(1);
                 transaction.setType(Type.EXPENDITURE);
                 transaction.setNotes("Test note");
