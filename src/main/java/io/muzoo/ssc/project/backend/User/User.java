@@ -20,7 +20,7 @@ public class User {
 
     private String password;
 
-    private String display_name;
+    private String displayName;
 
     private String role;
 }

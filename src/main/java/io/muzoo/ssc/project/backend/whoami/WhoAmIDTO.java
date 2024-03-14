@@ -17,6 +17,6 @@ public class WhoAmIDTO {
 
     private String role;
 
-    private String display_name;
+    private String displayName;
 
 }
