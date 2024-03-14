@@ -2,12 +2,18 @@ package io.muzoo.ssc.project.backend.Transaction;
 
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+//@Builder
 @Table(name = "transaction")
 public class Transaction {
 
@@ -19,12 +25,21 @@ public class Transaction {
 
     private long tagId;
 
+    private long tagId2;
+
     @Enumerated(EnumType.ORDINAL)
     private Type type;
 
     private String notes;
 
+    private BigDecimal value;
+
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date timestamp;
 
+// TODO: Fix up the date system
+//    @Column(name = "timestamp", nullable = false, insertable = false, updatable = false)
+//    private LocalDateTime timestamp;
+
+    public Transaction() {}
 }

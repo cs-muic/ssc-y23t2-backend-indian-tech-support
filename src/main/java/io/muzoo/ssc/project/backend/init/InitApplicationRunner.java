@@ -15,6 +15,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 @Component
@@ -32,6 +33,9 @@ public class InitApplicationRunner implements ApplicationRunner {
     // Creates an admin user in the database when the application starts for the first time.
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        // TODO: Remove this
+        userRepository.deleteAll();
+        transactionRepository.deleteAll();
         User admin = userRepository.findByUsername("admin");
         if (admin == null){
             User user = new User();
@@ -46,6 +50,7 @@ public class InitApplicationRunner implements ApplicationRunner {
                 transaction.setTagId(1);
                 transaction.setType(Type.EXPENDITURE);
                 transaction.setNotes("Test note");
+                transaction.setValue(BigDecimal.valueOf(69.0));
                 transaction.setTimestamp(new java.util.Date(2024, Calendar.FEBRUARY, 1, 1, 1, 1));
                 transactionRepository.save(transaction);
             }
