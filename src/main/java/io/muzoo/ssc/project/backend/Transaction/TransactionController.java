@@ -8,12 +8,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.support.RequestContextUtils;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @RestController
 public class TransactionController {
@@ -26,6 +29,14 @@ public class TransactionController {
 
     @PostMapping("/api/transactions")
     public TransactionDTO createTransaction(HttpServletRequest request) {
+//        TimeZone timezone;
+//        try {
+//            timezone = RequestContextUtils.getTimeZone(request);
+//            System.out.println(timezone);
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Timezone error", e);
+//        }
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof UserDetails)) {
             throw new IllegalStateException("User not authenticated");
@@ -56,7 +67,13 @@ public class TransactionController {
         transaction.setUserId(user.getId()); // Ensuring the transaction belongs to the authenticated user
         transaction.setTagId(tagId);
         transaction.setTagId2(tagId2);
-        transaction.setType(Type.parseType(type)); // Assuming Type is an enum
+
+        try {
+            transaction.setType(Type.parseType(type));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid transaction type", e);
+        }
+
         transaction.setNotes(notes);
         transaction.setValue(value);
         transaction.setTimestamp(timestamp);
