@@ -80,16 +80,12 @@ public class TransactionController {
 
         transaction = transactionRepository.save(transaction);
 
-        return convertToDTO(transaction);
-    }
-
-    private TransactionDTO convertToDTO(Transaction transaction) {
         return TransactionDTO.builder()
                 .id(transaction.getId())
                 .userId(transaction.getUserId())
                 .tagId(transaction.getTagId())
                 .tagId2(transaction.getTagId2())
-                .type(transaction.getType().name()) // Enum to String
+                .type(transaction.getType().name())
                 .notes(transaction.getNotes())
                 .value(transaction.getValue())
                 .timestamp(transaction.getTimestamp())
