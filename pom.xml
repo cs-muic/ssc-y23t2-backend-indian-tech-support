@@ -88,6 +88,11 @@
 			<artifactId>gson</artifactId>
 			<version>2.10.1</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>8.5.11</version>
+        </dependency>
+    </dependencies>
 
 </project>

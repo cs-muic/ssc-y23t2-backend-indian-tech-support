@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,7 +36,8 @@ public class Transaction {
     private BigDecimal value;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private java.util.Date timestamp;
+    private Timestamp timestamp;
+
 
 // TODO: Fix up the date system
 //    @Column(name = "timestamp", nullable = false, insertable = false, updatable = false)

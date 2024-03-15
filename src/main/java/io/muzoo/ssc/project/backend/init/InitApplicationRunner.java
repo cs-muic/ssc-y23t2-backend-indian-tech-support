@@ -16,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 @Component
@@ -51,7 +54,13 @@ public class InitApplicationRunner implements ApplicationRunner {
                 transaction.setType(Type.EXPENDITURE);
                 transaction.setNotes("Test note");
                 transaction.setValue(BigDecimal.valueOf(69.0));
-                transaction.setTimestamp(new java.util.Date(2024, Calendar.FEBRUARY, 1, 1, 1, 1));
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+                    Timestamp timestamp = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
+                    transaction.setTimestamp(timestamp);
+                } catch(Exception e) { //this generic but you can control another types of exception
+                    // look the origin of excption
+                }
                 transactionRepository.save(transaction);
             }
         }
