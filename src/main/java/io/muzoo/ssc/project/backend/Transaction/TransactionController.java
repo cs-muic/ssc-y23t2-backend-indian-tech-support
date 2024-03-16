@@ -1,6 +1,7 @@
 package io.muzoo.ssc.project.backend.Transaction;
 
 import io.muzoo.ssc.project.backend.SidebarDTO.AmountDTO;
+import io.muzoo.ssc.project.backend.SidebarDTO.TagStatsDTO;
 import io.muzoo.ssc.project.backend.User.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -110,6 +112,20 @@ public class TransactionController {
         return AmountDTO.builder()
                 .totalAmount(new BigDecimal(monthlyAmount))
                 .found(true)
+                .build();
+    }
+
+    @GetMapping("/api/transactions/{transactionType}/{month}/tag-stats")
+    public TagStatsDTO getTagStats(@PathVariable int month, @PathVariable String transactionType) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = verifyUser(principal);
+        Type type = Type.parseType(transactionType);
+        List<Object[]> tagStats = transactionRepository.sumAmountByUserIdAndMonthGroupByTag(user.getId(), month, type);
+        boolean success = tagStats.isEmpty();
+        return TagStatsDTO.builder()
+                .tagStats(tagStats)
+                .userId(user.getId())
+                .empty(success)
                 .build();
     }
 }
