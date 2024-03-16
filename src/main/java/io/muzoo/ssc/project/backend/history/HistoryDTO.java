@@ -21,5 +21,6 @@ public class HistoryDTO {
 
     private List<Transaction> transactions;
 
+    @Builder.Default
     private boolean loggedIn = false;
 }
