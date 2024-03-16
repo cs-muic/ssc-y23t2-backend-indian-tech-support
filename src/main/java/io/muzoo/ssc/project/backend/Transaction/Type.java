@@ -2,10 +2,19 @@ package io.muzoo.ssc.project.backend.Transaction;
 
 import org.thymeleaf.util.StringUtils;
 
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@AllArgsConstructor
 public enum Type {
-    INCOME, EXPENDITURE, NONE;
+
+    INCOME("INCOME"), 
+    EXPENDITURE("EXPENDITURE"), 
+    NONE("NONE"),
+    ;
+
+    @Getter
+    private final String name;
 
     public static Type parseType(String input) {
         if (StringUtils.equals(input, "EXPENDITURE")) {
