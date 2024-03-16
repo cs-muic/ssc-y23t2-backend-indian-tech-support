@@ -1,7 +1,5 @@
 package io.muzoo.ssc.project.backend.Transaction;
 
-import org.thymeleaf.util.StringUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
