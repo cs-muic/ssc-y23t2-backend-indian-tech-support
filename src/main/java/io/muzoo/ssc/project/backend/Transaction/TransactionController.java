@@ -44,7 +44,7 @@ public class TransactionController {
 
     }
 
-    @PostMapping("/api/transactions")
+    @PostMapping("/api/createTransactions")
     public TransactionDTO createTransaction(HttpServletRequest request) {
 //        TimeZone timezone;
 //        try {
@@ -58,14 +58,16 @@ public class TransactionController {
         User user = verifyUser(principal);
 
         // Extracting and parsing request parameters
-        long tagId = Long.parseLong(request.getParameter("tagId"));
-        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
+//        long tagId = Long.parseLong(request.getParameter("tagId"));
+//        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
+        long tagId = 1L;
+        long tagId2 = 2L;
         String type = request.getParameter("type");
         String notes = request.getParameter("notes");
         BigDecimal value = new BigDecimal(request.getParameter("value"));
         Timestamp timestamp;
         try {
-            Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(request.getParameter("timestamp"));
+            Date parsedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(request.getParameter("timestamp"));
             timestamp = new Timestamp(parsedDate.getTime());
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date format", e);
