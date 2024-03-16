@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -88,7 +89,7 @@ public class HistoryController {
                 BigDecimal value = new BigDecimal(request.getParameter("value"));
                 Timestamp timestamp;
                 try {
-                    Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(request.getParameter("timestamp"));
+                    Date parsedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(request.getParameter("timestamp"));
                     timestamp = new Timestamp(parsedDate.getTime());
                 } catch (ParseException e) {
                     throw new IllegalArgumentException("Invalid date format", e);

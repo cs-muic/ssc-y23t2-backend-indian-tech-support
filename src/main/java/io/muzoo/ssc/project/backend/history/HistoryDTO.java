@@ -16,6 +16,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class HistoryDTO {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
+    // TODO: Figure out the datetime formats
+
     private List<Transaction> transactions;
 
     private boolean loggedIn = false;
