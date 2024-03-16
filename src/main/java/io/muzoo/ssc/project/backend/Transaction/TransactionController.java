@@ -1,14 +1,16 @@
 package io.muzoo.ssc.project.backend.Transaction;
 
+import io.muzoo.ssc.project.backend.SidebarDTO.AmountDTO;
 import io.muzoo.ssc.project.backend.User.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -16,7 +18,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-import java.util.TimeZone;
 
 @RestController
 public class TransactionController {
@@ -26,6 +27,20 @@ public class TransactionController {
 
     @Autowired
     private UserRepository userRepository;
+
+    public User verifyUser(Object principal){
+        if (!(principal instanceof UserDetails)) {
+            throw new IllegalStateException("User not authenticated");
+        }
+
+        UserDetails userDetails = (UserDetails) principal;
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(userDetails.getUsername()));
+        if (optionalUser.isEmpty()) {
+            throw new IllegalStateException("User not found");
+        }
+        return optionalUser.get();
+
+    }
 
     @PostMapping("/api/transactions")
     public TransactionDTO createTransaction(HttpServletRequest request) {
@@ -38,16 +53,7 @@ public class TransactionController {
 //        }
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof UserDetails)) {
-            throw new IllegalStateException("User not authenticated");
-        }
-
-        UserDetails userDetails = (UserDetails) principal;
-        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(userDetails.getUsername()));
-        if (!optionalUser.isPresent()) {
-            throw new IllegalStateException("User not found");
-        }
-        User user = optionalUser.get();
+        User user = verifyUser(principal);
 
         // Extracting and parsing request parameters
         long tagId = Long.parseLong(request.getParameter("tagId"));
@@ -89,6 +95,21 @@ public class TransactionController {
                 .notes(transaction.getNotes())
                 .value(transaction.getValue())
                 .timestamp(transaction.getTimestamp())
+                .build();
+    }
+
+    @GetMapping("/api/transactions/{transactionType}/{month}")
+    public AmountDTO getTransaction(@PathVariable String transactionType, @PathVariable int month){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = verifyUser(principal);
+        Type type = Type.parseType(transactionType);
+        Double monthlyAmount = transactionRepository.sumAmountByUserIdAndMonthAndType(user.getId(), month , type);
+        if (monthlyAmount == null){
+            monthlyAmount = 0.0;
+        }
+        return AmountDTO.builder()
+                .totalAmount(new BigDecimal(monthlyAmount))
+                .found(true)
                 .build();
     }
 }

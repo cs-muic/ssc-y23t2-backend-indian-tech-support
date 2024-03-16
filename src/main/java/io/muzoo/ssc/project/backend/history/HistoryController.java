@@ -35,6 +35,7 @@ public class HistoryController {
 
     Gson gson = new Gson();
 
+
     /**
      * Make sure that all API path begins with /api. This ends up being useful for when we do proxy
      */
@@ -83,10 +84,9 @@ public class HistoryController {
                     if (id != null) {
                         transactionRepository.deleteById(Long.parseLong(id));
                     }
-                }
-                else if (Objects.equals(editType, "edit")) {
+                } else if (Objects.equals(editType, "edit")) {
                     if (id != null) {
-                        if (transactionRepository.existsById(Long.parseLong(id))){
+                        if (transactionRepository.existsById(Long.parseLong(id))) {
                             // Parse through every col value
 
                             Transaction transactionToUpdate = transactionRepository.findById(Long.parseLong(id));
