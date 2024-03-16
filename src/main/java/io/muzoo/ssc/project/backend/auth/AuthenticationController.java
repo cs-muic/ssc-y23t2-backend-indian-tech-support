@@ -42,7 +42,7 @@ public class AuthenticationController {
             request.logout();
             return SimpleResponseDTO.builder().success(true).message("Logout Successful").build();
         } catch (ServletException e){
-            return SimpleResponseDTO.builder().success(true).message(e.getMessage()).build();
+            return SimpleResponseDTO.builder().success(false).message(e.getMessage()).build();
         }
     }
 }
