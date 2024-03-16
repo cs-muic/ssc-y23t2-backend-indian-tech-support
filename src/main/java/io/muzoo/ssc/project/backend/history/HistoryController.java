@@ -1,18 +1,11 @@
 package io.muzoo.ssc.project.backend.history;
 
 import com.google.gson.Gson;
-import io.muzoo.ssc.project.backend.SimpleResponseDTO;
 import io.muzoo.ssc.project.backend.Transaction.Transaction;
-import io.muzoo.ssc.project.backend.Transaction.TransactionDTO;
 import io.muzoo.ssc.project.backend.Transaction.TransactionRepository;
 import io.muzoo.ssc.project.backend.Transaction.Type;
 import io.muzoo.ssc.project.backend.User.User;
 import io.muzoo.ssc.project.backend.User.UserRepository;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,9 +18,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -79,47 +70,6 @@ public class HistoryController {
             throw new IllegalStateException("User not authenticated");
         }
 
-
-        String id = request.getParameter("id");
-        String userId = request.getParameter("userId");
-        String tagId = request.getParameter("tagId");
-        String tagId2 = request.getParameter("tagId2");
-        String type = request.getParameter("type");
-        String notes = request.getParameter("notes");
-        String timestamp = request.getParameter("timestamp");
-        String editType = request.getParameter("editType");
-        // TODO: Finish parsing the request params
-        try {
-            // The line below has the potential for a NullPointException due to nesting dot notation
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (principal != null && principal instanceof org.springframework.security.core.userdetails.User) {
-                // Update the transaction repository based on the request details.
-                if (Objects.equals(editType, "delete")) {
-                    if (id != null) {
-                        transactionRepository.deleteById(Long.parseLong(id));
-                    }
-                } else if (Objects.equals(editType, "edit")) {
-                    if (id != null) {
-                        if (transactionRepository.existsById(Long.parseLong(id))) {
-                            // Parse through every col value
-
-                            Transaction transactionToUpdate = transactionRepository.findById(Long.parseLong(id));
-                            if (userId != null) {
-                                transactionToUpdate.setUserId(Long.parseLong(userId));
-                            }
-                            if (type != null) {
-                                if (Type.parseType(type) != Type.NONE) {
-                                    transactionToUpdate.setType(Type.parseType(type));
-                                }
-                            }
-                            // The following can be null
-                            transactionToUpdate.setTagId(Long.parseLong(tagId));
-                            transactionToUpdate.setNotes(notes);
-                            // TODO: Set the time stamp
-//                            transactionToUpdate.setTimestamp();
-                            transactionRepository.save(transactionToUpdate);
-                        }
-                    }
         UserDetails userDetails = (UserDetails) principal;
         Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(userDetails.getUsername()));
         if (!optionalUser.isPresent()) {
@@ -159,7 +109,7 @@ public class HistoryController {
             }
             case DELETE -> {
                 transactionRepository.deleteById(id);
-            break;
+                break;
             }
             default -> throw new IllegalStateException("EditType invalid");
         }
