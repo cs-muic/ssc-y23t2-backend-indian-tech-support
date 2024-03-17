@@ -11,6 +11,7 @@ import io.muzoo.ssc.project.backend.Transaction.TransactionController;
 import io.muzoo.ssc.project.backend.User.User;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.TransactionBlueprintsDTO;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.service.TransactionBlueprintsService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class TransactionBlueprintsController {
@@ -32,9 +33,9 @@ public class TransactionBlueprintsController {
     }
 
     @PostMapping("/api/transaction-blueprints/post-transaction-blueprints")
-    public TransactionBlueprintsDTO postTransactionBlueprints(){
+    public TransactionBlueprintsDTO postTransactionBlueprints(HttpServletRequest request){
         final User user = verifyUser();
-        return transactionBlueprintsService.postTransactionBlueprints(user);
+        return transactionBlueprintsService.postTransactionBlueprints(request,user);
     }
 
 }
