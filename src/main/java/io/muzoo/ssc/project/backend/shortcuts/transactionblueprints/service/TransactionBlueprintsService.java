@@ -12,7 +12,7 @@ public class TransactionBlueprintsService {
         return null;
     }
 
-    public TransactionBlueprintsDTO putTransactionBlueprints(User user) {
+    public TransactionBlueprintsDTO postTransactionBlueprints(User user) {
         return null;
     }
     

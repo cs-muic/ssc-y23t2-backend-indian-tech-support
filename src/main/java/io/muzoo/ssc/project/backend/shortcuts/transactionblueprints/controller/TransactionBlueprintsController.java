@@ -3,6 +3,7 @@ package io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,10 +31,10 @@ public class TransactionBlueprintsController {
         return transactionBlueprintsService.getTransactionBlueprints(user);
     }
 
-    @PutMapping("/api/transaction-blueprints/put-transaction-blueprints")
-    public TransactionBlueprintsDTO putTransactionBlueprints(){
+    @PostMapping("/api/transaction-blueprints/post-transaction-blueprints")
+    public TransactionBlueprintsDTO postTransactionBlueprints(){
         final User user = verifyUser();
-        return transactionBlueprintsService.putTransactionBlueprints(user);
+        return transactionBlueprintsService.postTransactionBlueprints(user);
     }
 
 }
