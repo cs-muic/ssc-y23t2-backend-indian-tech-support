@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Type {
     
-    SHORTCUTS("SHORTCUTS"),
+    FAVORITES("FAVORITES"),
     RECURRING("RECURRING"),
     NONE("NONE"),
     ;
