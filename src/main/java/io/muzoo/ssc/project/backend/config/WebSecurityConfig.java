@@ -39,7 +39,7 @@ public class WebSecurityConfig {
 		// Allows for root and /api/login and /api/logout
 		http.authorizeHttpRequests((authorizeHttpRequests) ->
 				authorizeHttpRequests
-						.requestMatchers("/", "/api/login", "/api/logout", "/api/whoami")
+						.requestMatchers("/", "/api/login", "/api/logout", "/api/whoami", "/api/signup")
 						.permitAll()
 		);
 
