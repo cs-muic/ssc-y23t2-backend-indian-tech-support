@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import io.muzoo.ssc.project.backend.User.User;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.TransactionBlueprintsDTO;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class TransactionBlueprintsService {
@@ -12,7 +13,7 @@ public class TransactionBlueprintsService {
         return null;
     }
 
-    public TransactionBlueprintsDTO postTransactionBlueprints(User user) {
+    public TransactionBlueprintsDTO postTransactionBlueprints(HttpServletRequest request, User user) {
         return null;
     }
     
