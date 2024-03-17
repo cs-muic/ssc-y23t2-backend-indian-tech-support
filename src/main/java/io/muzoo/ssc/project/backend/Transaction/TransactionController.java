@@ -3,7 +3,6 @@ package io.muzoo.ssc.project.backend.Transaction;
 import io.muzoo.ssc.project.backend.SidebarDTO.AmountDTO;
 import io.muzoo.ssc.project.backend.SidebarDTO.TagStatsDTO;
 import io.muzoo.ssc.project.backend.User.*;
-import io.muzoo.ssc.project.backend.userverify.UserVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +31,16 @@ public class TransactionController {
     private UserRepository userRepository;
 
     public User verifyUser(Object principal){
-        return UserVerifier.getInstance().verifyUser(principal, userRepository);
+        if (!(principal instanceof UserDetails)) {
+            throw new IllegalStateException("User not authenticated");
+        }
+
+        UserDetails userDetails = (UserDetails) principal;
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(userDetails.getUsername()));
+        if (optionalUser.isEmpty()) {
+            throw new IllegalStateException("User not found");
+        }
+        return optionalUser.get();
     }
 
     @PostMapping("/api/createTransactions")
