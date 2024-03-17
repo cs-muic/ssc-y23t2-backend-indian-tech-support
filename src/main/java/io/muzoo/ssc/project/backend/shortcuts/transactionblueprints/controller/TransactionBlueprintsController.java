@@ -29,13 +29,13 @@ public class TransactionBlueprintsController {
     @GetMapping("/api/transaction-blueprints/get-transaction-blueprints")
     public TransactionBlueprintsDTO getTransactionBlueprints(){
         final User user = verifyUser();
-        return transactionBlueprintsService.getTransactionBlueprints(user);
+        return transactionBlueprintsService.getTransactionBlueprintsDTO(user);
     }
 
     @PostMapping("/api/transaction-blueprints/post-transaction-blueprints")
     public TransactionBlueprintsDTO postTransactionBlueprints(HttpServletRequest request){
         final User user = verifyUser();
-        return transactionBlueprintsService.postTransactionBlueprints(request,user);
+        return transactionBlueprintsService.postTransactionBlueprintsDTO(request,user);
     }
 
 }
