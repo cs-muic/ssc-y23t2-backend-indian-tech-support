@@ -11,8 +11,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class GraphDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class GraphDataDTO {
     private List<Object[]> data;
     private boolean tagged;
+    private boolean empty;
 }
