@@ -58,10 +58,8 @@ public class TransactionController {
         User user = verifyUser(principal);
 
         // Extracting and parsing request parameters
-//        long tagId = Long.parseLong(request.getParameter("tagId"));
-//        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
-        long tagId = 1L;
-        long tagId2 = 2L;
+        long tagId = Long.parseLong(request.getParameter("tagId"));
+        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
         String type = request.getParameter("type");
         String notes = request.getParameter("notes");
         BigDecimal value = new BigDecimal(request.getParameter("value"));
