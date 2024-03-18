@@ -26,10 +26,16 @@ public class TransactionBlueprintsController {
         return transactionController.verifyUser(principal);
     }
 
-    @GetMapping("/api/transaction-blueprints/get-transaction-blueprints")
-    public TransactionBlueprintsDTO getTransactionBlueprints(){
+    @GetMapping("/api/transaction-blueprints/get-transaction-blueprints/favorites")
+    public TransactionBlueprintsDTO getFavoriteTransactionBlueprintsDTO() {
         final User user = verifyUser();
-        return transactionBlueprintsService.getTransactionBlueprintsDTO(user);
+        return transactionBlueprintsService.getFavoriteTransactionBlueprintsDTO(user);
+    }
+
+    @GetMapping("/api/transaction-blueprints/get-transaction-blueprints/recurring")
+    public TransactionBlueprintsDTO getRecurringTransactionBlueprints(){
+        final User user = verifyUser();
+        return transactionBlueprintsService.getRecurringTransactionBlueprintsDTO(user);
     }
 
     @PostMapping("/api/transaction-blueprints/post-transaction-blueprints")
