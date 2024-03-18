@@ -151,6 +151,9 @@ public class TransactionBlueprintsService {
             transactionBlueprints.setResourceURI(resourceURI);
         }
 
+        // save to database
+        transactionBlueprintsRepositories.saveAll(transactionBlueprintsList);
+
         return transactionBlueprintsList;
     }
 
