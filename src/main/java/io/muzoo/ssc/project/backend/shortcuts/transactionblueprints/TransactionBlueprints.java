@@ -1,6 +1,7 @@
 package io.muzoo.ssc.project.backend.shortcuts.transactionblueprints;
 
 import java.math.BigDecimal;
+import java.security.Timestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,6 +42,7 @@ public class TransactionBlueprints {
 
         private BigDecimal value;
 
-
+        // this should be ignored for Type != RECURRING
+        private Integer dateofMonthRecurring;
 
 }
