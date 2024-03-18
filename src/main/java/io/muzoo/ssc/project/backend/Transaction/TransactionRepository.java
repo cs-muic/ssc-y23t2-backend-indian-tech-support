@@ -20,7 +20,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>{
     @Query("SELECT SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = 2018 AND t.type = :type")
     Double sumAmountByUserIdAndMonthAndType(long userId, int month, Type type);
 
-    @Query("SELECT t.tagId, SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = 2018 AND t.type = :type GROUP BY t.tagId")
+    @Query("SELECT t.tagId, SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = 2018 AND t.type = :type GROUP BY t.tagId ORDER BY SUM(t.value) DESC")
     List<Object[]> sumAmountByUserIdAndMonthGroupByTag(long userId, int month, Type type);
 
     @Query("SELECT SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND t.timestamp BETWEEN :startDate AND :endDate " +
