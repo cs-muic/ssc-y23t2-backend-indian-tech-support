@@ -8,7 +8,7 @@ public enum Type {
     NONE,
     ;
 
-    public Type getType(String type){
+    public static Type getType(String type){
         try{
             return valueOf(type);
         }
