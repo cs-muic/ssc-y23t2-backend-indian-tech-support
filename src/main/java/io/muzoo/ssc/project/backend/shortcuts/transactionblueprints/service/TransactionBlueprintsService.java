@@ -1,6 +1,7 @@
 package io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,15 @@ public class TransactionBlueprintsService {
                    .build(); 
     }
 
+    public TransactionBlueprintsDTO getFavoriteTransactionBlueprintsDTO(User user) {
+        final List<TransactionBlueprints> favoriteTransactionBlueprintsList = getFavoriteTransactionBlueprints(user);
+        checkValidTypeAll(favoriteTransactionBlueprintsList); // This remains unchanged
+        return TransactionBlueprintsDTO.builder()
+                .transactionBlueprintsList(favoriteTransactionBlueprintsList)
+                .build();
+    }
+
+
     public TransactionBlueprintsDTO postTransactionBlueprintsDTO(HttpServletRequest request, User user) {
         return null;
     }
@@ -43,6 +53,15 @@ public class TransactionBlueprintsService {
     public List<TransactionBlueprints> getTransactionBlueprints(User user) {
         return transactionBlueprintsRepositories.findAllByUserId(user.getId());
     }
+
+    public List<TransactionBlueprints> getFavoriteTransactionBlueprints(User user) {
+        // Assuming TransactionBlueprints has a getShortcutType() method and there's an enum or constant for FAVORITES
+        return transactionBlueprintsRepositories.findAllByUserId(user.getId())
+                .stream()
+                .filter(t -> t.getShortcutType() == Type.FAVORITES)
+                .collect(Collectors.toList());
+    }
+
 
     public TransactionBlueprints postTransactionBlueprints(HttpServletRequest request, User user) {
         return null;
