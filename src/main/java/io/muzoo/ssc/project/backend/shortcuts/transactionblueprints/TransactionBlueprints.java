@@ -34,7 +34,7 @@ public class TransactionBlueprints {
         @Enumerated(EnumType.ORDINAL)
         private io.muzoo.ssc.project.backend.Transaction.Type transactionType;
 
-        @Enumerated(EnumType.ORDINAL)
+        @Enumerated(EnumType.STRING)
         private io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.Type shortcutType;
 
         private String notes;
