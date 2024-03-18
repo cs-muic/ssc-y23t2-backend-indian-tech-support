@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.TransactionBlueprints;
+import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.Type;
 
 @Repository
 public interface TransactionBlueprintsRepositories extends JpaRepository<TransactionBlueprints,Long> {
@@ -12,6 +13,7 @@ public interface TransactionBlueprintsRepositories extends JpaRepository<Transac
     Optional<TransactionBlueprints> findById(Long id);
     boolean existsById(Long id);
     List<TransactionBlueprints> findAllByUserId(Long id);
+    List<TransactionBlueprints> findAllByShortcutType(Type shortcutType);
     void deleteById(Long id);
     
     
