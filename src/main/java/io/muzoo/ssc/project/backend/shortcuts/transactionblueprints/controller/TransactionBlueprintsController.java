@@ -32,10 +32,10 @@ public class TransactionBlueprintsController {
         return transactionBlueprintsService.getFavoriteTransactionBlueprintsDTO(user);
     }
 
-    @GetMapping("/api/transaction-blueprints/get-transaction-blueprints/recuring")
+    @GetMapping("/api/transaction-blueprints/get-transaction-blueprints/recurring")
     public TransactionBlueprintsDTO getRecurringTransactionBlueprints(){
         final User user = verifyUser();
-        return transactionBlueprintsService.getTransactionBlueprintsDTO(user);
+        return transactionBlueprintsService.getRecurringTransactionBlueprintsDTO(user);
     }
 
     @PostMapping("/api/transaction-blueprints/post-transaction-blueprints")
