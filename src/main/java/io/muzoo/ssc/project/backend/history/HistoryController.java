@@ -36,7 +36,6 @@ public class HistoryController {
 
     Gson gson = new Gson();
 
-
     /**
      * Make sure that all API path begins with /api. This ends up being useful for when we do proxy
      */
