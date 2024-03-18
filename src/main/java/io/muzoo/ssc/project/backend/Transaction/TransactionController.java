@@ -41,7 +41,6 @@ public class TransactionController {
             throw new IllegalStateException("User not found");
         }
         return optionalUser.get();
-
     }
 
     @PostMapping("/api/createTransactions")
