@@ -21,6 +21,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
+
 import java.util.List;
 
 @Component
@@ -55,6 +57,7 @@ public class InitApplicationRunner implements ApplicationRunner {
 
         User admin = userRepository.findByUsername("admin");
         if (admin == null){
+            Random random = new Random();
             User user = new User();
             user.setUsername("admin");
             user.setPassword(passwordEncoder.encode("admin"));
@@ -64,7 +67,8 @@ public class InitApplicationRunner implements ApplicationRunner {
             for (int index = 1; index < 15; index++) {
                 Transaction transaction = new Transaction();
                 transaction.setUserId(userRepository.findByUsername("admin").getId());
-                transaction.setTagId(1);
+                transaction.setTagId(random.nextInt(11));
+                transaction.setTagId2((random.nextInt(11)));
                 transaction.setType(Type.EXPENDITURE);
                 transaction.setNotes("Test note");
                 transaction.setValue(BigDecimal.valueOf(69.0));

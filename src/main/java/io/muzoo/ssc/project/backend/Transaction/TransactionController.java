@@ -1,16 +1,14 @@
 package io.muzoo.ssc.project.backend.Transaction;
 
-import io.muzoo.ssc.project.backend.SidebarDTO.AmountDTO;
-import io.muzoo.ssc.project.backend.SidebarDTO.TagStatsDTO;
+import io.muzoo.ssc.project.backend.AnalyticsDTO.AmountDTO;
+import io.muzoo.ssc.project.backend.AnalyticsDTO.GraphDataDTO;
+import io.muzoo.ssc.project.backend.AnalyticsDTO.TagStatsDTO;
 import io.muzoo.ssc.project.backend.User.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
@@ -20,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.sql.Timestamp;
+
 
 @RestController
 public class TransactionController {
@@ -57,10 +57,8 @@ public class TransactionController {
         User user = verifyUser(principal);
 
         // Extracting and parsing request parameters
-//        long tagId = Long.parseLong(request.getParameter("tagId"));
-//        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
-        long tagId = 1L;
-        long tagId2 = 2L;
+        long tagId = Long.parseLong(request.getParameter("tagId"));
+        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
         String type = request.getParameter("type");
         String notes = request.getParameter("notes");
         BigDecimal value = new BigDecimal(request.getParameter("value"));
@@ -129,4 +127,35 @@ public class TransactionController {
                 .empty(success)
                 .build();
     }
+
+    @GetMapping("/api/transactions/graph-data/tags")
+    public GraphDataDTO getGraphDataWithTag(@RequestParam String startDate, @RequestParam String endDate,
+                                            @RequestParam String transactionType, @RequestParam String dateFormat, @RequestParam List<Long> tags) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = verifyUser(principal);
+        List<Object[]> graphData = transactionRepository.getChartData(user.getId(), parseTimestamp(startDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat, tags);
+        return GraphDataDTO.builder()
+                .data(graphData)
+                .tagged(true)
+                .empty(graphData.isEmpty())
+                .build();
+    }
+
+    @GetMapping("/api/transactions/graph-data/no-tags")
+    public GraphDataDTO getGraphDataWithTag(@RequestParam String startDate, @RequestParam String endDate,
+                                            @RequestParam String transactionType, @RequestParam String dateFormat) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = verifyUser(principal);
+        List<Object[]> graphData = transactionRepository.getChartDataNoTag(user.getId(),parseTimestamp(endDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat);
+        return GraphDataDTO.builder()
+                .data(graphData)
+                .tagged(false)
+                .empty(graphData.isEmpty())
+                .build();
+    }
+
+    private Timestamp parseTimestamp(String dateString) {
+        return Timestamp.valueOf(dateString + " 00:00:00");
+    }
+
 }
