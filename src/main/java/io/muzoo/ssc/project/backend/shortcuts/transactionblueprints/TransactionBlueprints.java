@@ -45,4 +45,7 @@ public class TransactionBlueprints {
         // this should be ignored for Type != RECURRING
         private Integer dateofMonthRecurring;
 
+        // uri of pic icon
+        private String resourceURI;
+
 }
