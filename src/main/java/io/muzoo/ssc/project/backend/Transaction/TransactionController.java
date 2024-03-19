@@ -147,7 +147,7 @@ public class TransactionController {
                                             @RequestParam String transactionType, @RequestParam String dateFormat) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
-        List<Object[]> graphData = transactionRepository.getChartDataNoTag(user.getId(),parseTimestamp(endDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat);
+        List<Object[]> graphData = transactionRepository.getChartDataNoTag(user.getId(), parseTimestamp(startDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat);
         return GraphDataDTO.builder()
                 .data(graphData)
                 .tagged(false)
