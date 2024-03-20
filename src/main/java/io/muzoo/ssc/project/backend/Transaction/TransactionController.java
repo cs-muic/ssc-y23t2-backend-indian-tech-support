@@ -57,8 +57,28 @@ public class TransactionController {
         User user = verifyUser(principal);
 
         // Extracting and parsing request parameters
-        long tagId = Long.parseLong(request.getParameter("tagId"));
-        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
+//        long tagId = Long.parseLong(request.getParameter("tagId"));
+//        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
+
+        String tagIdParam = request.getParameter("tagId");
+        String tagId2Param = request.getParameter("tagId2");
+
+        long tagId = 0; // Default value
+        long tagId2 = 0; // Default value
+
+        try {
+            // Only parse if the parameters are not null and not empty
+            if (tagIdParam != null && !tagIdParam.isEmpty()) {
+                tagId = Long.parseLong(tagIdParam);
+            }
+            if (tagId2Param != null && !tagId2Param.isEmpty()) {
+                tagId2 = Long.parseLong(tagId2Param);
+            }
+        } catch (NumberFormatException e) {
+            // Log error or handle the case where parameters are invalid
+            System.err.println("Error parsing tagId or tagId2 from request parameters");
+        }
+
         String type = request.getParameter("type");
         String notes = request.getParameter("notes");
         BigDecimal value = new BigDecimal(request.getParameter("value"));
