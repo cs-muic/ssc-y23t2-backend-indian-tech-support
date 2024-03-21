@@ -37,10 +37,47 @@ public class TransactionBlueprintsController {
         return transactionBlueprintsService.getRecurringTransactionBlueprintsDTO(user);
     }
 
+    @Deprecated
     @PostMapping("/api/transaction-blueprints/post-transaction-blueprints")
     public TransactionBlueprintsDTO postTransactionBlueprints(HttpServletRequest request){
         final User user = verifyUser();
         return transactionBlueprintsService.postTransactionBlueprintsDTO(request,user);
+    }
+
+    @PostMapping("/api/transaction-blueprints/recurring/create")
+    public TransactionBlueprintsDTO createTransactionBlueprintsRecurrings(HttpServletRequest request){
+        final User user = verifyUser();
+        return transactionBlueprintsService.createTransactionBlueprintDTORecurrings(request,user);
+    }
+
+    @PostMapping("/api/transaction-blueprints/recurring/edit")
+    public TransactionBlueprintsDTO editTransactionBlueprintsRecurrings(HttpServletRequest request){
+        final User user = verifyUser();
+        return transactionBlueprintsService.editTransactionBlueprintDTORecurrings(request,user);
+    }
+
+    @PostMapping("/api/transaction-blueprints/recurring/delete")
+    public TransactionBlueprintsDTO deleteTransactionBlueprintsRecurrings(HttpServletRequest request){
+        final User user = verifyUser();
+        return transactionBlueprintsService.deleteTransactionBlueprintDTORecurrings(request,user);
+    }
+
+    @PostMapping("/api/transaction-blueprints/favorites/create")
+    public TransactionBlueprintsDTO createTransactionBlueprintsFavorites(HttpServletRequest request){
+        final User user = verifyUser();
+        return transactionBlueprintsService.createTransactionBlueprintDTOFavorites(request,user);
+    }
+
+    @PostMapping("/api/transaction-blueprints/favorites/edit")
+    public TransactionBlueprintsDTO editTransactionBlueprintsFavorites(HttpServletRequest request){
+        final User user = verifyUser();
+        return transactionBlueprintsService.editTransactionBlueprintDTOFavorites(request,user);
+    }
+
+    @PostMapping("/api/transaction-blueprints/favorites/delete")
+    public TransactionBlueprintsDTO deleteTransactionBlueprintsDTOFavorites(HttpServletRequest request){
+        final User user = verifyUser();
+        return transactionBlueprintsService.deleteTransactionBlueprintDTOFavorites(request,user);
     }
 
     @PostMapping("/api/transaction-blueprints/delete-favorite")

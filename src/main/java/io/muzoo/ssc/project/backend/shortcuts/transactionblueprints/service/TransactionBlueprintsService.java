@@ -7,8 +7,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer.DeadLetterPolicy;
 import org.springframework.stereotype.Service;
 
+import io.micrometer.common.util.StringUtils;
 import io.muzoo.ssc.project.backend.User.User;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.TransactionBlueprints;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.TransactionBlueprintsDTO;
@@ -30,6 +32,235 @@ public class TransactionBlueprintsService {
                 }
             }
         );
+    }
+
+    private TransactionBlueprintsDTO listsToDTO(List<TransactionBlueprints> transactionBlueprintsList){
+        checkValidTypeAll(transactionBlueprintsList);
+        return TransactionBlueprintsDTO.builder()
+                .transactionBlueprintsList(transactionBlueprintsList)
+                .build();
+    }
+
+    private String getNewResourceURI(HttpServletRequest request,TransactionBlueprints transactionBlueprints, User user){
+        // TODO: wire this up poroperly
+        return "";
+
+    }
+
+    private TransactionBlueprints getDefaultTransactionBlueprints(HttpServletRequest request, User user){
+        final String transactionBlueprintsIDString = request.getParameter("transactionBlueprintsID");
+        if (transactionBlueprintsIDString == null){
+            return null;
+        }
+        else {
+            final Long transactionBlueprintsID = Long.parseLong(transactionBlueprintsIDString);
+            return transactionBlueprintsRepositories.getReferenceById(transactionBlueprintsID);
+        }
+    }
+
+    private TransactionBlueprints createSafeTransactionBlueprints(HttpServletRequest request, User user){
+
+        final TransactionBlueprints transactionBlueprints = new TransactionBlueprints();
+
+        try {
+            final Long userId = user.getId();
+            transactionBlueprints.setUserId(userId);
+        } catch (NumberFormatException | NullPointerException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal UserId Format");
+        }
+        try {
+            final Long tagId = Long.parseLong(request.getParameter("tagId"));
+            transactionBlueprints.setTagId(tagId);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal TagId Format");
+        }
+        try {
+            final Long tagId2 = Long.parseLong(request.getParameter("tagId2"));
+            transactionBlueprints.setTagId2(tagId2);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal TagId2 Format");
+        }
+        {
+            final io.muzoo.ssc.project.backend.Transaction.Type transactionType = io.muzoo.ssc.project.backend.Transaction.Type.parseType(request.getParameter("transactionType"));
+            if (transactionType.equals(io.muzoo.ssc.project.backend.Transaction.Type.NONE)) {
+                throw new IllegalArgumentException("Illegal Trasaction Type Format");
+            }
+            transactionBlueprints.setTransactionType(transactionType);
+        }
+        {
+            final Type transactionType = Type.getType(request.getParameter("shortcutType"));
+            if (transactionType.equals(Type.NONE)) {
+                throw new IllegalArgumentException("Illegal Trasaction Type Format");
+            }
+            transactionBlueprints.setShortcutType(transactionType);
+        }
+        {
+            final String notes = request.getParameter("notes");
+            if (notes == null) {
+                throw new IllegalArgumentException("Illegal Notes Format, Can be empty but not null");
+            }
+            transactionBlueprints.setNotes(notes);
+        }
+        try {
+            final BigDecimal value = new BigDecimal(request.getParameter("value"));
+            transactionBlueprints.setValue(value);
+        } catch (NumberFormatException | NullPointerException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal Values Formats");
+        }
+        try {
+            final String dateOfMonthString  = request.getParameter("dateofMonthRecurring");
+            if (StringUtils.isBlank(dateOfMonthString)){
+                throw new IllegalArgumentException("Illegal Dates of Month Formats, Cannot Be Null");    
+            }
+            final Integer datedateofMonthRecurring = Integer.parseInt(dateOfMonthString);
+            transactionBlueprints.setDateofMonthRecurring(datedateofMonthRecurring);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal Dates of Month Formats");
+        }
+        {
+            /* does not suppose to allow users to send resourceURI, is managed in the backside */
+            // final String resourceURI = request.getParameter("resourceURI");
+            // if (StringUtils.isBlank(resourceURI)) {
+            //     throw new IllegalArgumentException("Illegal resourceURI Format, Can Not Be NULL!");
+            // }
+            // transactionBlueprints.setResourceURI(resourceURI);
+            transactionBlueprints.setResourceURI(getNewResourceURI(request,transactionBlueprints,user));
+        }
+
+        return transactionBlueprints;
+
+    }
+
+    private TransactionBlueprints createPartialTransactionBlueprintsFromDefaultsBlueprints(HttpServletRequest request, User user, TransactionBlueprints defaultBlueprints){
+
+        final TransactionBlueprints transactionBlueprints = new TransactionBlueprints();
+
+        try {
+            final Long userId = user.getId();
+            transactionBlueprints.setUserId(userId);
+        } catch (NumberFormatException | NullPointerException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal UserId Format");
+        }
+        try {
+            final String tagIdString = request.getParameter("tagId");
+            if (tagIdString == null){
+                transactionBlueprints.setTagId(defaultBlueprints.getTagId());
+            }
+            else {
+                final Long tagId = Long.parseLong(tagIdString);
+                transactionBlueprints.setTagId(tagId);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal TagId Format");
+        }
+        try {
+            final String tagId2String = request.getParameter("tagId2");
+            if (tagId2String == null){
+                transactionBlueprints.setTagId2(defaultBlueprints.getTagId2());
+            }
+            else {
+                final Long tagId2 = Long.parseLong(tagId2String);
+                transactionBlueprints.setTagId2(tagId2);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal TagId2 Format");
+        }
+        {
+            final String transactionTypeString = request.getParameter("transactionType");
+            if (transactionTypeString == null){
+                transactionBlueprints.setTransactionType(defaultBlueprints.getTransactionType());
+            }
+            else {
+                final io.muzoo.ssc.project.backend.Transaction.Type transactionType = io.muzoo.ssc.project.backend.Transaction.Type.parseType(transactionTypeString);
+                if (transactionType.equals(io.muzoo.ssc.project.backend.Transaction.Type.NONE)) {
+                    throw new IllegalArgumentException("Illegal Trasaction Type Format");
+                }
+                transactionBlueprints.setTransactionType(transactionType);
+            }
+        }
+        {
+            final String shortcutTypeString = request.getParameter("shortcutType");
+            if (shortcutTypeString == null){
+                transactionBlueprints.setShortcutType(defaultBlueprints.getShortcutType());
+            }
+            else {
+                final Type shortcutType = Type.getType(shortcutTypeString);
+                if (shortcutType.equals(Type.NONE)) {
+                    throw new IllegalArgumentException("Illegal Shortcut Type Format");
+                }
+                transactionBlueprints.setShortcutType(shortcutType);
+            }
+        }
+        {
+            final String notesString = request.getParameter("notes");
+            if (notesString == null){
+                transactionBlueprints.setNotes(defaultBlueprints.getNotes());
+            }
+            else {
+                final String notes = notesString;
+                // if (notes == null) {
+                //     throw new IllegalArgumentException("Illegal Notes Format, Can be empty but not null");
+                // }
+                transactionBlueprints.setNotes(notes);
+            }
+        }
+        try {
+            final String valueString = request.getParameter("value");
+            if (valueString == null){
+                transactionBlueprints.setValue(defaultBlueprints.getValue());
+            }
+            else {
+                final BigDecimal value = new BigDecimal(valueString);
+                transactionBlueprints.setValue(value);
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal Values Formats");
+        }
+        try {
+            final String dateOfMonthStringString = request.getParameter("dateofMonthRecurring");
+            if (dateOfMonthStringString == null){
+                transactionBlueprints.setDateofMonthRecurring(defaultBlueprints.getDateofMonthRecurring());
+            }
+            else {
+                final String dateOfMonthString  = dateOfMonthStringString;
+                if (StringUtils.isBlank(dateOfMonthString)){
+                    throw new IllegalArgumentException("Illegal Dates of Month Formats, Cannot Be Null");    
+                }
+                final Integer datedateofMonthRecurring = Integer.parseInt(dateOfMonthString);
+                transactionBlueprints.setDateofMonthRecurring(datedateofMonthRecurring);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Illegal Dates of Month Formats");
+        }
+        {
+            /*
+             * currently use same resourceURI as default transactions blueprints
+            */
+            // final String resourceURIString = request.getParameter("resourceURI");
+            // if (resourceURIString == null){
+                transactionBlueprints.setResourceURI(defaultBlueprints.getResourceURI());
+            // }
+            // else {
+            //     final String resourceURI = resourceURIString;
+            //     if (StringUtils.isBlank(resourceURI)) {
+            //         throw new IllegalArgumentException("Illegal resourceURI Format, Can Not Be NULL!");
+            //     }
+            //     transactionBlueprints.setResourceURI(resourceURI);
+            // }
+        }
+
+        return transactionBlueprints;
+
     }
 
     public TransactionBlueprintsDTO getRecurringTransactionBlueprintsDTO(User user) {
@@ -80,72 +311,13 @@ public class TransactionBlueprintsService {
     public List<TransactionBlueprints> postTransactionBlueprints(HttpServletRequest request, User user) {
         // this list contain only one item, is there just to conform to the dto definition
         final List<TransactionBlueprints> transactionBlueprintsList = new ArrayList<>();
-        final TransactionBlueprints transactionBlueprints = new TransactionBlueprints();
+        // final TransactionBlueprints transactionBlueprints = new TransactionBlueprints();
+        final TransactionBlueprints transactionBlueprints = createSafeTransactionBlueprints(request, user);
         transactionBlueprintsList.add(transactionBlueprints);
 
-        try {
-            final Long userId = Long.parseLong(request.getParameter("userId"));
-            transactionBlueprints.setUserId(userId);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal UserId Format");
-        }
-        try {
-            final Long tagId = Long.parseLong(request.getParameter("tagId"));
-            transactionBlueprints.setTagId(tagId);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal TagId Format");
-        }
-        try {
-            final Long tagId2 = Long.parseLong(request.getParameter("tagId2"));
-            transactionBlueprints.setTagId2(tagId2);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal TagId2 Format");
-        }
-        {
-            final io.muzoo.ssc.project.backend.Transaction.Type transactionType = io.muzoo.ssc.project.backend.Transaction.Type.parseType(request.getParameter("transactionType"));
-            if (transactionType.equals(io.muzoo.ssc.project.backend.Transaction.Type.NONE)) {
-                throw new IllegalArgumentException("Illegal Trasaction Type Format");
-            }
-            transactionBlueprints.setTransactionType(transactionType);
-        }
-        {
-            final Type transactionType = Type.getType(request.getParameter("shortcutType"));
-            if (transactionType.equals(Type.NONE)) {
-                throw new IllegalArgumentException("Illegal Trasaction Type Format");
-            }
-            transactionBlueprints.setShortcutType(transactionType);
-        }
-        {
-            final String notes = request.getParameter("notes");
-            if (notes == null) {
-                throw new IllegalArgumentException("Illegal Notes Format, Can be empty but not null");
-            }
-            transactionBlueprints.setNotes(notes);
-        }
-        try {
-            final BigDecimal value = new BigDecimal(request.getParameter("value"));
-            transactionBlueprints.setValue(value);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal Values Formats");
-        }
-        try {
-            final Integer datedateofMonthRecurring = Integer.parseInt(request.getParameter("dateofMonthRecurring"));
-            transactionBlueprints.setDateofMonthRecurring(datedateofMonthRecurring);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal Dates of Month Formats");
-        }
-        {
-            final String resourceURI = request.getParameter("resourceURI");
-            if (resourceURI == null) {
-                throw new IllegalArgumentException("Illegal resourceURI Format, Can be empty but not NULL!");
-            }
-            transactionBlueprints.setResourceURI(resourceURI);
-        }
+        /* assign new resourceURI */
+        final String resourceURI = getNewResourceURI(request, transactionBlueprints, user);
+        transactionBlueprints.setResourceURI(resourceURI);
 
         // save to database
         transactionBlueprintsRepositories.saveAll(transactionBlueprintsList);
@@ -172,6 +344,79 @@ public class TransactionBlueprintsService {
                     return true; // Successfully deleted
                 })
                 .orElse(false); // Not found or not owned by the user, not deleted
+    }
+
+    public List<TransactionBlueprints> createTransactionBlueprintRecurrings(HttpServletRequest request, User user) {
+        /* implementations is the same one for this */
+        return postTransactionBlueprints(request, user);
+    }
+
+    public List<TransactionBlueprints> editTransactionBlueprintRecurrings(HttpServletRequest request, User user) {
+        final TransactionBlueprints defaultsTransactionBlueprints = getDefaultTransactionBlueprints(request, user);
+        if (defaultsTransactionBlueprints == null){
+            throw new IllegalArgumentException("No Such Transaction Blueprints (transaction blueprints id not found)");
+        }
+        final TransactionBlueprints editedTransactionBlueprints = createPartialTransactionBlueprintsFromDefaultsBlueprints(request,user,defaultsTransactionBlueprints);
+        final List<TransactionBlueprints> transactionBlueprintsList = new ArrayList<>();
+        transactionBlueprintsList.add(editedTransactionBlueprints);
+        return transactionBlueprintsList;
+    }
+
+    public List<TransactionBlueprints> deleteTransactionBlueprintRecurrings(HttpServletRequest request, User user) {
+        final TransactionBlueprints transactionBlueprintsToDelete = getDefaultTransactionBlueprints(request, user);
+        if (transactionBlueprintsToDelete == null){
+            throw new IllegalArgumentException("No Such Transaction Blueprints (transaction blueprints id not found)");
+        }
+        /* delete from database */
+        final List<Long> transactionBlueprintsIDList = new ArrayList<>();
+        transactionBlueprintsIDList.add(transactionBlueprintsToDelete.getId());
+        transactionBlueprintsRepositories.deleteAllById(transactionBlueprintsIDList);
+        final List<TransactionBlueprints> transactionBlueprintsList = new ArrayList<>();
+        transactionBlueprintsList.add(transactionBlueprintsToDelete);
+        return transactionBlueprintsList;
+    }
+
+    public List<TransactionBlueprints> createTransactionBlueprintFavorites(HttpServletRequest request, User user) {
+        /* implementations is the same one for this */
+        return postTransactionBlueprints(request, user);
+    }
+
+    public TransactionBlueprintsDTO editTransactionBlueprintFavorites(HttpServletRequest request, User user) {
+        return null;
+    }
+
+    public TransactionBlueprintsDTO deleteTransactionBlueprintFavorites(HttpServletRequest request, User user) {
+        return null;
+    }
+
+    public TransactionBlueprintsDTO createTransactionBlueprintDTORecurrings(HttpServletRequest request, User user) {
+        final List<TransactionBlueprints> transactionBlueprintsList = createTransactionBlueprintRecurrings(request, user);
+        final TransactionBlueprintsDTO transactionBlueprintsDTO = listsToDTO(transactionBlueprintsList);
+        return transactionBlueprintsDTO;
+    }
+
+    public TransactionBlueprintsDTO editTransactionBlueprintDTORecurrings(HttpServletRequest request, User user) {
+        final List<TransactionBlueprints> transactionBlueprintsList = editTransactionBlueprintRecurrings(request, user);
+        final TransactionBlueprintsDTO transactionBlueprintsDTO = listsToDTO(transactionBlueprintsList);
+        return transactionBlueprintsDTO;
+    }
+
+    public TransactionBlueprintsDTO deleteTransactionBlueprintDTORecurrings(HttpServletRequest request, User user) {
+        final List<TransactionBlueprints> transactionBlueprintsList = deleteTransactionBlueprintRecurrings(request, user);
+        final TransactionBlueprintsDTO transactionBlueprintsDTO = listsToDTO(transactionBlueprintsList);
+        return transactionBlueprintsDTO;
+    }
+
+    public TransactionBlueprintsDTO createTransactionBlueprintDTOFavorites(HttpServletRequest request, User user) {
+        return null;
+    }
+
+    public TransactionBlueprintsDTO editTransactionBlueprintDTOFavorites(HttpServletRequest request, User user) {
+        return null;
+    }
+
+    public TransactionBlueprintsDTO deleteTransactionBlueprintDTOFavorites(HttpServletRequest request, User user) {
+        return null;
     }
 
 }
