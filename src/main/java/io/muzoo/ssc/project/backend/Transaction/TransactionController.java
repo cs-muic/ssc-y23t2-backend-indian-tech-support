@@ -45,21 +45,11 @@ public class TransactionController {
 
     @PostMapping("/api/createTransactions")
     public TransactionDTO createTransaction(HttpServletRequest request) {
-//        TimeZone timezone;
-//        try {
-//            timezone = RequestContextUtils.getTimeZone(request);
-//            System.out.println(timezone);
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Timezone error", e);
-//        }
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
 
         // Extracting and parsing request parameters
-//        long tagId = Long.parseLong(request.getParameter("tagId"));
-//        long tagId2 = Long.parseLong(request.getParameter("tagId2"));
-
         String tagIdParam = request.getParameter("tagId");
         String tagId2Param = request.getParameter("tagId2");
 

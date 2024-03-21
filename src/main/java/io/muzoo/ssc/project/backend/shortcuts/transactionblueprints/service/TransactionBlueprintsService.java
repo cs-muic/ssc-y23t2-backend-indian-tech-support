@@ -3,6 +3,7 @@ package io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,44 +86,41 @@ public class TransactionBlueprintsService {
         try {
             final Long userId = Long.parseLong(request.getParameter("userId"));
             transactionBlueprints.setUserId(userId);
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal UserId Format");
         }
         try {
             final Long tagId = Long.parseLong(request.getParameter("tagId"));
             transactionBlueprints.setTagId(tagId);
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal TagId Format");
         }
         try {
             final Long tagId2 = Long.parseLong(request.getParameter("tagId2"));
             transactionBlueprints.setTagId2(tagId2);
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal TagId2 Format");
         }
         {
             final io.muzoo.ssc.project.backend.Transaction.Type transactionType = io.muzoo.ssc.project.backend.Transaction.Type.parseType(request.getParameter("transactionType"));
-            if (transactionType.equals(io.muzoo.ssc.project.backend.Transaction.Type.NONE)){
+            if (transactionType.equals(io.muzoo.ssc.project.backend.Transaction.Type.NONE)) {
                 throw new IllegalArgumentException("Illegal Trasaction Type Format");
             }
             transactionBlueprints.setTransactionType(transactionType);
         }
         {
             final Type transactionType = Type.getType(request.getParameter("shortcutType"));
-            if (transactionType.equals(Type.NONE)){
+            if (transactionType.equals(Type.NONE)) {
                 throw new IllegalArgumentException("Illegal Trasaction Type Format");
             }
             transactionBlueprints.setShortcutType(transactionType);
         }
         {
             final String notes = request.getParameter("notes");
-            if (notes == null){
+            if (notes == null) {
                 throw new IllegalArgumentException("Illegal Notes Format, Can be empty but not null");
             }
             transactionBlueprints.setNotes(notes);
@@ -130,22 +128,20 @@ public class TransactionBlueprintsService {
         try {
             final BigDecimal value = new BigDecimal(request.getParameter("value"));
             transactionBlueprints.setValue(value);
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal Values Formats");
         }
         try {
             final Integer datedateofMonthRecurring = Integer.parseInt(request.getParameter("dateofMonthRecurring"));
             transactionBlueprints.setDateofMonthRecurring(datedateofMonthRecurring);
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal Dates of Month Formats");
         }
         {
             final String resourceURI = request.getParameter("resourceURI");
-            if (resourceURI == null){
+            if (resourceURI == null) {
                 throw new IllegalArgumentException("Illegal resourceURI Format, Can be empty but not NULL!");
             }
             transactionBlueprints.setResourceURI(resourceURI);
@@ -155,6 +151,27 @@ public class TransactionBlueprintsService {
         transactionBlueprintsRepositories.saveAll(transactionBlueprintsList);
 
         return transactionBlueprintsList;
+    }
+
+    public TransactionBlueprintsDTO getTransactionBlueprintsDTO(User user) {
+        // Assuming there's a method in your repository to find all transaction blueprints by the user
+        List<TransactionBlueprints> transactionBlueprintsList = transactionBlueprintsRepositories.findByUserId(user.getId());
+
+        // Build and return the DTO
+        return TransactionBlueprintsDTO.builder()
+                .transactionBlueprintsList(transactionBlueprintsList)
+                .build();
+    }
+
+    public boolean deleteTransactionBlueprint(Long id, User user) {
+        // Optional check if the transaction blueprint exists and belongs to the user
+        return transactionBlueprintsRepositories.findById(id)
+                .filter(blueprint -> blueprint.getUserId() == (user.getId()))
+                .map(blueprint -> {
+                    transactionBlueprintsRepositories.delete(blueprint);
+                    return true; // Successfully deleted
+                })
+                .orElse(false); // Not found or not owned by the user, not deleted
     }
 
 }

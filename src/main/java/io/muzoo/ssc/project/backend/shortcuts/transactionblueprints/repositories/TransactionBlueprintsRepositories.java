@@ -20,11 +20,7 @@ public interface TransactionBlueprintsRepositories extends JpaRepository<Transac
     List<TransactionBlueprints> findAllByUserId(Long id);
     List<TransactionBlueprints> findAllByShortcutType(Type shortcutType);
     void deleteById(Long id);
-    
-    
-    
-    
-    
-    
 
+
+    List<TransactionBlueprints> findByUserId(long id);
 }
