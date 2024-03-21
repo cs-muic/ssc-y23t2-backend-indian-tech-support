@@ -84,28 +84,35 @@ public class TransactionBlueprintsService {
         transactionBlueprintsList.add(transactionBlueprints);
 
         try {
-            final Long userId = Long.parseLong(request.getParameter("userId"));
+            final Long userId = user.getId();
             transactionBlueprints.setUserId(userId);
         } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal UserId Format");
         }
+        // Extracting and parsing request parameters
+        String tagIdParam = request.getParameter("tagId");
+        String tagId2Param = request.getParameter("tagId2");
+
+        long tagId = 0; // Default value
+        long tagId2 = 0; // Default value
+
         try {
-            final Long tagId = Long.parseLong(request.getParameter("tagId"));
-            transactionBlueprints.setTagId(tagId);
+            // Only parse if the parameters are not null and not empty
+            if (tagIdParam != null && !tagIdParam.isEmpty()) {
+                tagId = Long.parseLong(tagIdParam);
+                transactionBlueprints.setTagId(tagId);
+            }
+            if (tagId2Param != null && !tagId2Param.isEmpty()) {
+                tagId2 = Long.parseLong(tagId2Param);
+                transactionBlueprints.setTagId2(tagId2);
+            }
         } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal TagId Format");
-        }
-        try {
-            final Long tagId2 = Long.parseLong(request.getParameter("tagId2"));
-            transactionBlueprints.setTagId2(tagId2);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Illegal TagId2 Format");
+            // Log error or handle the case where parameters are invalid
+            System.err.println("Error parsing tagId or tagId2 from request parameters");
         }
         {
-            final io.muzoo.ssc.project.backend.Transaction.Type transactionType = io.muzoo.ssc.project.backend.Transaction.Type.parseType(request.getParameter("transactionType"));
+            final io.muzoo.ssc.project.backend.Transaction.Type transactionType = io.muzoo.ssc.project.backend.Transaction.Type.parseType(request.getParameter("type"));
             if (transactionType.equals(io.muzoo.ssc.project.backend.Transaction.Type.NONE)) {
                 throw new IllegalArgumentException("Illegal Trasaction Type Format");
             }
@@ -131,21 +138,24 @@ public class TransactionBlueprintsService {
         } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal Values Formats");
-        }
-        try {
-            final Integer datedateofMonthRecurring = Integer.parseInt(request.getParameter("dateofMonthRecurring"));
-            transactionBlueprints.setDateofMonthRecurring(datedateofMonthRecurring);
+        }try {
+            String dateofMonthRecurringParam = request.getParameter("dateofMonthRecurring");
+            // For favorite case this is not needed
+            if (dateofMonthRecurringParam != null && !dateofMonthRecurringParam.isEmpty()) {
+                final Integer datedateofMonthRecurring = Integer.parseInt(dateofMonthRecurringParam);
+                transactionBlueprints.setDateofMonthRecurring(datedateofMonthRecurring);
+            }
         } catch (NumberFormatException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Illegal Dates of Month Formats");
         }
-        {
-            final String resourceURI = request.getParameter("resourceURI");
-            if (resourceURI == null) {
-                throw new IllegalArgumentException("Illegal resourceURI Format, Can be empty but not NULL!");
-            }
-            transactionBlueprints.setResourceURI(resourceURI);
-        }
+//        {
+//            final String resourceURI = request.getParameter("resourceURI");
+//            if (resourceURI == null) {
+//                throw new IllegalArgumentException("Illegal resourceURI Format, Can be empty but not NULL!");
+//            }
+//            transactionBlueprints.setResourceURI(resourceURI);
+//        }
 
         // save to database
         transactionBlueprintsRepositories.saveAll(transactionBlueprintsList);

@@ -53,10 +53,6 @@ public class TransactionBlueprintsController {
 
         // Call the service layer to perform the deletion
         transactionBlueprintsService.deleteTransactionBlueprint(id, user);
-
-        // After deletion, you might want to return the updated list of transaction blueprints,
-        // or some other relevant data encapsulated in TransactionBlueprintsDTO.
-        // This step depends on your application's specific logic and requirements.
         return transactionBlueprintsService.getTransactionBlueprintsDTO(user);
     }
 
