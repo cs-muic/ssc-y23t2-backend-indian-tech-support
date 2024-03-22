@@ -30,7 +30,7 @@ public class TransactionController {
     @Autowired
     private UserRepository userRepository;
 
-    public User verifyUser(Object principal){
+    public User verifyUser(Object principal) {
         if (!(principal instanceof UserDetails)) {
             throw new IllegalStateException("User not authenticated");
         }
@@ -110,12 +110,12 @@ public class TransactionController {
     }
 
     @GetMapping("/api/transactions/{transactionType}/{month}")
-    public AmountDTO getTransaction(@PathVariable String transactionType, @PathVariable int month){
+    public AmountDTO getTransaction(@PathVariable String transactionType, @PathVariable int month) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
         Type type = Type.parseType(transactionType);
-        Double monthlyAmount = transactionRepository.sumAmountByUserIdAndMonthAndType(user.getId(), month , type);
-        if (monthlyAmount == null){
+        Double monthlyAmount = transactionRepository.sumAmountByUserIdAndMonthAndType(user.getId(), month, type);
+        if (monthlyAmount == null) {
             monthlyAmount = 0.0;
         }
         return AmountDTO.builder()
@@ -140,10 +140,12 @@ public class TransactionController {
 
     @GetMapping("/api/transactions/graph-data/tags")
     public GraphDataDTO getGraphDataWithTag(@RequestParam String startDate, @RequestParam String endDate,
-                                            @RequestParam String transactionType, @RequestParam String dateFormat, @RequestParam List<Long> tags) {
+                                            @RequestParam String transactionType, @RequestParam String dateFormat,
+                                            @RequestParam String primaryTag, @RequestParam String secondaryTag) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
-        List<Object[]> graphData = transactionRepository.getChartData(user.getId(), parseTimestamp(startDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat, tags);
+        List<Object[]> graphData = transactionRepository.getChartData(user.getId(), parseTimestamp(startDate), parseTimestamp(endDate),
+                Type.parseType(transactionType), dateFormat, Long.parseLong(primaryTag), Long.parseLong(secondaryTag));
         return GraphDataDTO.builder()
                 .data(graphData)
                 .tagged(true)
