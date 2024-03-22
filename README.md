@@ -8,7 +8,7 @@
 
 - POST "/api/transaction-blueprints/recurring/create"
     - Description: \
-        create new recurring shotcut
+        create new recurring shortcuts
     - request parameter: \
         - "tagId":
             - requirement: \
