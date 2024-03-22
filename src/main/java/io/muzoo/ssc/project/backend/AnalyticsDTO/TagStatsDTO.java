@@ -1,10 +1,10 @@
-package io.muzoo.ssc.project.backend.SidebarDTO;
+package io.muzoo.ssc.project.backend.AnalyticsDTO;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
-import java.math.BigDecimal;
+
 import java.util.List;
 
 import lombok.Setter;

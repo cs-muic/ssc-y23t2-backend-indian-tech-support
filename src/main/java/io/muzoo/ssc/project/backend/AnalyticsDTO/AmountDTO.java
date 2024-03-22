@@ -1,4 +1,4 @@
-package io.muzoo.ssc.project.backend.SidebarDTO;
+package io.muzoo.ssc.project.backend.AnalyticsDTO;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 // Assuming Lombok annotations are used for boilerplate code like getters and setters
 @Getter
