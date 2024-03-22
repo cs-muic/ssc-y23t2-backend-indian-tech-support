@@ -67,8 +67,8 @@ public class InitApplicationRunner implements ApplicationRunner {
             for (int index = 1; index < 15; index++) {
                 Transaction transaction = new Transaction();
                 transaction.setUserId(userRepository.findByUsername("admin").getId());
-                transaction.setTagId(random.nextInt(11));
-                transaction.setTagId2((random.nextInt(11)));
+                transaction.setTagId(random.nextInt(1, 11));
+                transaction.setTagId2((random.nextInt(1, 11)));
                 transaction.setType(Type.EXPENDITURE);
                 transaction.setNotes("Test note");
                 transaction.setValue(BigDecimal.valueOf(69.0));
