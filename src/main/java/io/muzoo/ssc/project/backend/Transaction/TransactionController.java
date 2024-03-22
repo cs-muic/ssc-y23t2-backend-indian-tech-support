@@ -140,10 +140,10 @@ public class TransactionController {
 
     @GetMapping("/api/transactions/graph-data/tags")
     public GraphDataDTO getGraphDataWithTag(@RequestParam String startDate, @RequestParam String endDate,
-                                            @RequestParam String transactionType, @RequestParam String dateFormat, @RequestParam List<Long> tags) {
+                                            @RequestParam String transactionType, @RequestParam String dateFormat, @RequestParam long tag1, @RequestParam long tag2) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
-        List<Object[]> graphData = transactionRepository.getChartData(user.getId(), parseTimestamp(startDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat, tags);
+        List<Object[]> graphData = transactionRepository.getChartData(user.getId(), parseTimestamp(startDate), parseTimestamp(endDate), Type.parseType(transactionType), dateFormat, tag1, tag2);
         return GraphDataDTO.builder()
                 .data(graphData)
                 .tagged(true)
