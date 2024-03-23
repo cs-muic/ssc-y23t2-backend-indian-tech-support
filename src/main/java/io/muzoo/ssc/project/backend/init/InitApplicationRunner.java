@@ -64,6 +64,7 @@ public class InitApplicationRunner implements ApplicationRunner {
             user.setDisplayName("Admin");
             user.setRole("ADMIN");
             userRepository.save(user);
+            // TODO: Remove this
             for (int index = 1; index < 15; index++) {
                 Transaction transaction = new Transaction();
                 transaction.setUserId(userRepository.findByUsername("admin").getId());

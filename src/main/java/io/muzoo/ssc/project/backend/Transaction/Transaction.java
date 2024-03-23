@@ -38,10 +38,5 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp timestamp;
 
-
-// TODO: Fix up the date system
-//    @Column(name = "timestamp", nullable = false, insertable = false, updatable = false)
-//    private LocalDateTime timestamp;
-
     public Transaction() {}
 }
