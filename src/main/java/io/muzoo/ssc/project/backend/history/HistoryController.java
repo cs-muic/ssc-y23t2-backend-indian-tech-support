@@ -1,6 +1,5 @@
 package io.muzoo.ssc.project.backend.history;
 
-import com.google.gson.Gson;
 import io.muzoo.ssc.project.backend.Transaction.Transaction;
 import io.muzoo.ssc.project.backend.Transaction.TransactionRepository;
 import io.muzoo.ssc.project.backend.Transaction.Type;
@@ -33,9 +32,6 @@ public class HistoryController {
 
     @Autowired
     private TransactionRepository transactionRepository;
-
-    Gson gson = new Gson();
-
     /**
      * Make sure that all API path begins with /api. This ends up being useful for when we do proxy
      */

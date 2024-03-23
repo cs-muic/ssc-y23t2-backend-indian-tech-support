@@ -55,7 +55,7 @@ public class InitApplicationRunner implements ApplicationRunner {
         resetAutoIncrementValues();
         //TODO: End of Delete
 
-        User admin = userRepository.findByUsername("admin");
+        User admin = userRepository.findByUsername("admin"); // DO NOT DELETE THIS! TAG RELIES ON IT
         if (admin == null){
             Random random = new Random();
             User user = new User();
@@ -64,7 +64,7 @@ public class InitApplicationRunner implements ApplicationRunner {
             user.setDisplayName("Admin");
             user.setRole("ADMIN");
             userRepository.save(user);
-            // TODO: Remove this
+            // TODO: Remove this for loop
             for (int index = 1; index < 15; index++) {
                 Transaction transaction = new Transaction();
                 transaction.setUserId(userRepository.findByUsername("admin").getId());

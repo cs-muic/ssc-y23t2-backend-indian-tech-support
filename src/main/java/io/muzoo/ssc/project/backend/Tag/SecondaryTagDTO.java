@@ -1,11 +1,9 @@
-package io.muzoo.ssc.project.backend.history;
+package io.muzoo.ssc.project.backend.Tag;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.muzoo.ssc.project.backend.Transaction.Transaction;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -14,11 +12,12 @@ import java.util.List;
 @Setter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class HistoryDTO {
+public class SecondaryTagDTO {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-    private List<Transaction> transactions;
+    private List<SecondaryTag> secondaryTags;
 
     @Builder.Default
     private boolean loggedIn = false;
 }
+
