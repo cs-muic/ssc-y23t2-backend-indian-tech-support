@@ -1,5 +1,7 @@
 package io.muzoo.ssc.project.backend.init;
 
+import io.muzoo.ssc.project.backend.Tag.SecondaryTagRepository;
+import io.muzoo.ssc.project.backend.Tag.TagRepository;
 import io.muzoo.ssc.project.backend.Transaction.Transaction;
 import io.muzoo.ssc.project.backend.Transaction.TransactionRepository;
 import io.muzoo.ssc.project.backend.Transaction.Type;
@@ -7,6 +9,8 @@ import io.muzoo.ssc.project.backend.User.User;
 import io.muzoo.ssc.project.backend.User.UserRepository;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.TransactionBlueprints;
 import io.muzoo.ssc.project.backend.shortcuts.transactionblueprints.repositories.TransactionBlueprintsRepositories;
+import io.muzoo.ssc.project.backend.Tag.Tag;
+import io.muzoo.ssc.project.backend.Tag.SecondaryTag;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -19,11 +23,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Random;
-
-import java.util.List;
+import java.util.*;
 
 @Component
 public class InitApplicationRunner implements ApplicationRunner {
@@ -33,6 +33,12 @@ public class InitApplicationRunner implements ApplicationRunner {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private SecondaryTagRepository secondaryTagRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -52,6 +58,8 @@ public class InitApplicationRunner implements ApplicationRunner {
         userRepository.deleteAll();
         transactionRepository.deleteAll();
         transactionBlueprintsRepositories.deleteAll();
+        tagRepository.deleteAll();
+        secondaryTagRepository.deleteAll();
         resetAutoIncrementValues();
         //TODO: End of Delete
 
@@ -64,7 +72,30 @@ public class InitApplicationRunner implements ApplicationRunner {
             user.setDisplayName("Admin");
             user.setRole("ADMIN");
             userRepository.save(user);
-            // TODO: Remove this for loop
+            List<String> mainTags = Arrays.asList("Income", "Housing", "Utilities", "Food" ,"Transportation",
+                    "Healthcare", "Insurance", "Personal Spending", "Recreation & Entertainment",
+                    "Savings & Investments");
+            List<String> secondaryTags = Arrays.asList("Salary", "Investments", "Other Income", "Rent/Mortgage",
+                    "Property Taxes", "Maintenance/Repairs", "Electricity", "Water", "Internet", "Groceries",
+                    "Dining Out", "Coffee Shops", "Fuel", "Public Transport", "Vehicle Maintenance", "Doctor Visits",
+                    "Medications", "Health Insurance", "Life Insurance", "Property Insurance", "Car Insurance",
+                    "Clothing", "Gadgets", "Hobbies", "Movies", "Concerts", "Sporting Events", "Savings Account",
+                    "Stock Market Investments", "Retirement Savings");
+            for (int index = 0; index < mainTags.size(); index++){
+                Tag tag = new Tag();
+                tag.setTagName(mainTags.get(index));
+                tag.setDeleted(false);
+                tag.setUserId(userRepository.findByUsername("admin").getId());
+                Tag saved = tagRepository.save(tag);
+                for (int index2 = index; index2 < index + 3; index2++) {
+                    SecondaryTag secondaryTag = new SecondaryTag();
+                    secondaryTag.setDeleted(false);
+                    secondaryTag.setTagId(saved.getId());
+                    secondaryTag.setSecondaryTagName(secondaryTags.get(index2));
+                    secondaryTagRepository.save(secondaryTag);
+                }
+            }
+            // TODO: Remove this for loop for final product
             for (int index = 1; index < 15; index++) {
                 Transaction transaction = new Transaction();
                 transaction.setUserId(userRepository.findByUsername("admin").getId());
