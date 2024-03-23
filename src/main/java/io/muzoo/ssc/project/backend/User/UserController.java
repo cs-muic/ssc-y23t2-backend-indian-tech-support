@@ -48,7 +48,7 @@ public class UserController {
             if (!avatarFile.isEmpty()) {
                 avatarId = storageService.uploadFile(avatarFile, username);
             } else {
-                avatarId = "default_avatar.jpeg";
+                avatarId = "admin.jpeg";
             }
 
             User user = new User();
@@ -154,15 +154,35 @@ public class UserController {
             }
 
             if (!avatarFile.isEmpty()) {
-                String avatarId = storageService.uploadFile(avatarFile, user.getUsername());
-                user.setAvatarId(avatarId);
-                userRepository.save(user);
-                return SimpleResponseDTO.builder().success(true).message("Avatar updated successfully").build();
+                // Capture the old avatar ID
+                String oldAvatarId = user.getAvatarId();
+
+                // Proceed with updating the avatar only if it's not the default one
+                // Assuming 'admin.jpeg' is stored directly at the root of the bucket
+                // and you're storing the complete key in the avatarId field
+                if (oldAvatarId != null && !oldAvatarId.equals("admin.jpeg")) {
+                    // Upload the new avatar and update the user's avatar ID
+                    String newAvatarId = storageService.uploadFile(avatarFile, user.getUsername());
+                    user.setAvatarId(newAvatarId);
+                    userRepository.save(user);
+
+                    // After successfully uploading the new avatar, delete the old avatar from S3
+                    storageService.deleteFile(oldAvatarId);
+
+                    return SimpleResponseDTO.builder().success(true).message("Avatar updated successfully").build();
+                } else {
+                    // Handle the case where the current avatar is the default one
+                    String newAvatarId = storageService.uploadFile(avatarFile, user.getUsername());
+                    user.setAvatarId(newAvatarId);
+                    userRepository.save(user);
+
+                    return SimpleResponseDTO.builder().success(true).message("Default avatar retained, new avatar uploaded successfully.").build();
+                }
             } else {
                 return SimpleResponseDTO.builder().success(false).message("Avatar file is empty").build();
             }
         } catch (Exception e) {
-            return SimpleResponseDTO.builder().success(false).message("Error updating avatar").build();
+            return SimpleResponseDTO.builder().success(false).message("Error updating avatar: " + e.getMessage()).build();
         }
     }
 

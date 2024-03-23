@@ -44,4 +44,14 @@ public class StorageService {
             throw new RuntimeException("Error uploading file", e);
         }
     }
+
+    public void deleteFile(String fileKey) {
+        if (fileKey != null && !fileKey.isEmpty()) {
+            try {
+                s3client.deleteObject(bucketName, fileKey);
+            } catch (Exception e) {
+                throw new RuntimeException("Error deleting file from storage", e);
+            }
+        }
+    }
 }
