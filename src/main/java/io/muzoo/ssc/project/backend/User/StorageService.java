@@ -1,6 +1,7 @@
 package io.muzoo.ssc.project.backend.User;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,14 +22,26 @@ public class StorageService {
     private String bucketName;
 
     public String uploadFile(MultipartFile file, String username) {
-        String fileKey = username;
+        // Extracting the file extension
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf('.')) : "";
+        // Incorporating the username, current timestamp, and file extension in the file key
+        String fileKey = username + "_" + System.currentTimeMillis() + fileExtension;
+
         try {
-            File tempFile = Files.createTempFile(null, null).toFile();
+            File tempFile = Files.createTempFile(null, fileExtension).toFile();
             file.transferTo(tempFile);
-            s3client.putObject(new PutObjectRequest(bucketName, fileKey, tempFile));
-            return fileKey; // Return the S3 object key
+
+            // Create a PutObjectRequest, setting the ACL to PublicRead
+            s3client.putObject(new PutObjectRequest(bucketName, fileKey, tempFile)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            // It's a good practice to delete the temporary file after the upload
+            tempFile.delete();
+
+            return fileKey; // Returning the file key for reference
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error uploading file", e);
         }
     }
 }
