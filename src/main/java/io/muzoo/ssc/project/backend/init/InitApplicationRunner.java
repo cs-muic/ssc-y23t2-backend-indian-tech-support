@@ -71,6 +71,7 @@ public class InitApplicationRunner implements ApplicationRunner {
             user.setPassword(passwordEncoder.encode("admin"));
             user.setDisplayName("Admin");
             user.setRole("ADMIN");
+            user.setAvatarId("admin.jpeg");
             userRepository.save(user);
             List<String> mainTags = Arrays.asList("Income", "Housing", "Utilities", "Food" ,"Transportation",
                     "Healthcare", "Insurance", "Personal Spending", "Recreation & Entertainment",
