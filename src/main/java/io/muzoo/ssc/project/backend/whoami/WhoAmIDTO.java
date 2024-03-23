@@ -20,4 +20,6 @@ public class WhoAmIDTO {
 
     private String displayName;
 
+    private String avatarId;
+
 }
