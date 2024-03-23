@@ -23,4 +23,6 @@ public class User {
     private String displayName;
 
     private String role;
+
+    private String avatarId; // This can be the S3 object key
 }
