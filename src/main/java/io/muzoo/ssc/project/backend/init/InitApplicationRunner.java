@@ -82,17 +82,32 @@ public class InitApplicationRunner implements ApplicationRunner {
                     "Medications", "Health Insurance", "Life Insurance", "Property Insurance", "Car Insurance",
                     "Clothing", "Gadgets", "Hobbies", "Movies", "Concerts", "Sporting Events", "Savings Account",
                     "Stock Market Investments", "Retirement Savings");
-            for (int index = 0; index < mainTags.size(); index++){
+            // Map main tags to their corresponding secondary tags using indices
+            Map<String, List<Integer>> tagMappings = new HashMap<>();
+            tagMappings.put("Income", Arrays.asList(0, 1, 2));
+            tagMappings.put("Housing", Arrays.asList(3, 4, 5));
+            tagMappings.put("Utilities", Arrays.asList(6, 7, 8));
+            tagMappings.put("Food", Arrays.asList(9, 10, 11));
+            tagMappings.put("Transportation", Arrays.asList(12, 13, 14));
+            tagMappings.put("Healthcare", Arrays.asList(15, 16));
+            tagMappings.put("Insurance", Arrays.asList(17, 18, 19, 20));
+            tagMappings.put("Personal Spending", Arrays.asList(21, 22, 23));
+            tagMappings.put("Recreation & Entertainment", Arrays.asList(24, 25, 26));
+            tagMappings.put("Savings & Investments", Arrays.asList(27, 28, 29));
+
+            for (String mainTag : mainTags) {
                 Tag tag = new Tag();
-                tag.setTagName(mainTags.get(index));
+                tag.setTagName(mainTag);
                 tag.setDeleted(false);
-                tag.setUserId(userRepository.findByUsername("admin").getId());
-                Tag saved = tagRepository.save(tag);
-                for (int index2 = index; index2 < index + 3; index2++) {
+                tag.setUserId(userRepository.findByUsername("admin").getId()); // Assuming this returns a valid user
+                Tag savedTag = tagRepository.save(tag);
+
+                List<Integer> secondaryIndices = tagMappings.get(mainTag);
+                for (Integer index : secondaryIndices) {
                     SecondaryTag secondaryTag = new SecondaryTag();
+                    secondaryTag.setSecondaryTagName(secondaryTags.get(index));
                     secondaryTag.setDeleted(false);
-                    secondaryTag.setTagId(saved.getId());
-                    secondaryTag.setSecondaryTagName(secondaryTags.get(index2));
+                    secondaryTag.setTagId(savedTag.getId()); // Assuming this sets the association correctly
                     secondaryTagRepository.save(secondaryTag);
                 }
             }
@@ -138,6 +153,8 @@ public class InitApplicationRunner implements ApplicationRunner {
         entityManager.createNativeQuery("ALTER TABLE user AUTO_INCREMENT = 1;").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE transaction AUTO_INCREMENT = 1;").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE transaction_blueprints AUTO_INCREMENT = 1;").executeUpdate();
+        entityManager.createNativeQuery("ALTER TABLE tag AUTO_INCREMENT = 1;").executeUpdate();
+        entityManager.createNativeQuery("ALTER TABLE secondary_tag AUTO_INCREMENT = 1;").executeUpdate();
         // Add more tables as needed
     }
 }
