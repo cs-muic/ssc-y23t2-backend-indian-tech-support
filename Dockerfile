@@ -1,5 +1,7 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM openjdk:latest
 VOLUME /tmp
-ARG JAR_FILE
+ARG JAR_FILE=target/securing-web-complete-0.0.1-SNAPSHOT-spring-boot.jar
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENV TZ=Asia/Bangkok
+EXPOSE 8081
+ENTRYPOINT ["java", "-jar","/app.jar"]

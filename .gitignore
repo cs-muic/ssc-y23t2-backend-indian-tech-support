@@ -49,3 +49,7 @@ dependency-reduced-pom.xml
 .idea
 *.iml
 README.html
+
+
+### Ignore env files ###
+ignore/*
