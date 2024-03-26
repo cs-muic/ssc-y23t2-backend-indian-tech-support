@@ -87,6 +87,9 @@ public class TransactionController {
 
         try {
             transaction.setType(Type.parseType(type));
+            if (transaction.getType() == Type.NONE) {
+                throw new IllegalArgumentException("Invalid transaction type");
+            }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid transaction type", e);
         }
