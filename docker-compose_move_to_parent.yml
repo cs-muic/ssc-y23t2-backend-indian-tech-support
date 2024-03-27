@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  maria_db:
+    image: "mariadb:latest"
+#    restart: always
+    ports:
+      - "13306:3306"
+    environment:
+      MYSQL_DATABASE: budget_webapp
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+  api_service:
+    env_file:
+      - ssc-y23t2-backend-indian-tech-support/ignore/backend.env
+    build:
+      context: ./ssc-y23t2-backend-indian-tech-support/
+      dockerfile: Dockerfile
+      # restart: always
+    ports:
+      - "8081:8081"
+    command: [ "./wait-for-mariadb.sh", "maria_db:3306", "java", "-jar",
+               "ssc-y23t2-backend-indian-tech-support/target/securing-web-complete-0.0.1-SNAPSHOT-spring-boot.jar" ]
+    healthcheck:
+      test: curl --fail http://localhost:3306 || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    depends_on:
+      - maria_db
+    links:
+      - maria_db:app_db
+  frontend:
+    image: "node:latest"
+    build:
+      context: ./ssc-y23t2-frontend-indian-tech-support/frontend/
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./ssc-y23t2-frontend-indian-tech-support/frontend/:/app
+    depends_on:
+      - api_service
+    command: yarn serve
+    ports: 
+      - "8080:8080"
