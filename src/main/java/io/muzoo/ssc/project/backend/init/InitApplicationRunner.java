@@ -2,6 +2,7 @@ package io.muzoo.ssc.project.backend.init;
 
 import io.muzoo.ssc.project.backend.Tag.SecondaryTagRepository;
 import io.muzoo.ssc.project.backend.Tag.TagRepository;
+import io.muzoo.ssc.project.backend.TargetBudget.TargetBudgetRepository;
 import io.muzoo.ssc.project.backend.Transaction.Transaction;
 import io.muzoo.ssc.project.backend.Transaction.TransactionRepository;
 import io.muzoo.ssc.project.backend.Transaction.Type;
@@ -38,6 +39,9 @@ public class InitApplicationRunner implements ApplicationRunner {
     private TagRepository tagRepository;
 
     @Autowired
+    private TargetBudgetRepository targetBudgetRepository;
+
+    @Autowired
     private SecondaryTagRepository secondaryTagRepository;
 
     @Autowired
@@ -60,6 +64,7 @@ public class InitApplicationRunner implements ApplicationRunner {
         transactionBlueprintsRepositories.deleteAll();
         tagRepository.deleteAll();
         secondaryTagRepository.deleteAll();
+        targetBudgetRepository.deleteAll();
         resetAutoIncrementValues();
         //TODO: End of Delete
 
@@ -122,7 +127,7 @@ public class InitApplicationRunner implements ApplicationRunner {
                 transaction.setValue(BigDecimal.valueOf(69.0));
                 try {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-                    Timestamp timestamp = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
+                    Timestamp timestamp = Timestamp.valueOf("2024-03-02 01:02:03.123456789");
                     transaction.setTimestamp(timestamp);
                 } catch(Exception e) { //this generic but you can control another types of exception
                     // look the origin of excption

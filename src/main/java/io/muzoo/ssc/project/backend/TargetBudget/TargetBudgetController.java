@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -37,7 +34,7 @@ public class TargetBudgetController {
     }
 
     @GetMapping("/api/targetBudget")
-    public TargetBudgetDTO getTransaction(@PathVariable String transactionType, @PathVariable int month) {
+    public TargetBudgetDTO getTransaction() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
         TargetBudget tb = targetBudgetRepository.findByUserId(user.getId());
@@ -53,14 +50,13 @@ public class TargetBudgetController {
                 .build();
     }
 
-    @PostMapping("/api/targetBudget")
-    public TargetBudgetDTO createTransaction(HttpServletRequest request) {
+    @PostMapping("/api/createTargetBudget")
+    public TargetBudgetDTO createTransaction(@RequestParam float userBudget, @RequestParam float userTarget) {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = verifyUser(principal);
-
-        BigDecimal target = new BigDecimal(request.getParameter("target"));
-        BigDecimal budget = new BigDecimal(request.getParameter("budget"));
+        BigDecimal target = new BigDecimal(userTarget);
+        BigDecimal budget = new BigDecimal(userBudget);
 
         // Check if target or budget is null or less than or equal to 0
         if (target.compareTo(BigDecimal.ZERO) <= 0) {

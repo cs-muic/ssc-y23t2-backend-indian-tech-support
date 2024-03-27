@@ -17,10 +17,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>{
     void deleteById(long id);
     //TODO Change the year to current year
 
-    @Query("SELECT SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = 2018 AND t.type = :type")
+    @Query("SELECT SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = YEAR(CURRENT_DATE) AND t.type = :type")
     Double sumAmountByUserIdAndMonthAndType(long userId, int month, Type type);
 
-    @Query("SELECT t.tagId, SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = 2018 AND t.type = :type GROUP BY t.tagId ORDER BY SUM(t.value) DESC")
+    @Query("SELECT t.tagId, SUM(t.value) FROM Transaction t WHERE t.userId = :userId AND MONTH(t.timestamp) = :month AND YEAR(t.timestamp) = YEAR(CURRENT_DATE) AND t.type = :type GROUP BY t.tagId ORDER BY SUM(t.value) DESC")
     List<Object[]> sumAmountByUserIdAndMonthGroupByTag(long userId, int month, Type type);
 
     @Query("SELECT CASE :dateFormat WHEN 'Day' THEN DATE_FORMAT(t.timestamp, '%Y-%m-%d') WHEN 'Month' THEN DATE_FORMAT(t.timestamp, '%Y-%m') " +
