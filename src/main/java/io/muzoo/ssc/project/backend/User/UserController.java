@@ -30,8 +30,6 @@ public class UserController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String displayName = request.getParameter("display_name");
-        System.out.println(username + " " + password + " " + displayName);
-
         try {
             // Check if the username already exists
             User existingUser = userRepository.findByUsername(username);
