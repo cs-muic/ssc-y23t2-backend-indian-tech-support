@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @PutMapping("/api/user/update-username")
-    public SimpleResponseDTO updateUsername(HttpServletRequest request, @RequestParam("newUsername") String newUsername) {
+    public SimpleResponseDTO updateUsername( @RequestParam String newUsername) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal != null && principal instanceof UserDetails userDetails) {
@@ -96,7 +96,7 @@ public class UserController {
     }
 
     @PutMapping("/api/user/update-display-name")
-    public SimpleResponseDTO updateDisplayName(HttpServletRequest request, @RequestParam("newDisplayName") String newDisplayName) {
+    public SimpleResponseDTO updateDisplayName(@RequestParam String newDisplayName) {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
@@ -118,7 +118,7 @@ public class UserController {
 
 
     @PutMapping("/api/user/update-password")
-    public SimpleResponseDTO updatePassword(HttpServletRequest request, @RequestParam("newPassword") String newPassword) {
+    public SimpleResponseDTO updatePassword(@RequestParam String newPassword, @RequestParam String confirmPassword) {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
@@ -129,7 +129,9 @@ public class UserController {
             if (user == null) {
                 return SimpleResponseDTO.builder().success(false).message("User not found").build();
             }
-
+            if (!newPassword.equals(confirmPassword)) {
+                return SimpleResponseDTO.builder().success(false).message("Passwords do not match").build();
+            }
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
             return SimpleResponseDTO.builder().success(true).message("Password updated successfully").build();
