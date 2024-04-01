@@ -67,7 +67,8 @@ public class UserController {
     }
 
     @PutMapping("/api/user/update-username")
-    public SimpleResponseDTO updateUsername( @RequestParam String newUsername) {
+    public SimpleResponseDTO updateUsername(@RequestParam String newUsername) {
+        System.out.println(newUsername + "Updating username");
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal != null && principal instanceof UserDetails userDetails) {
@@ -84,6 +85,12 @@ public class UserController {
             if (existingUser != null) {
                 return SimpleResponseDTO.builder().success(false).message("Username already taken").build();
             }
+            if (newUsername.equals(currentUsername)) {
+                return SimpleResponseDTO.builder().success(false).message("New username is the same as the current username").build();
+            }
+            if (newUsername.isEmpty()) {
+                return SimpleResponseDTO.builder().success(false).message("Empty Username").build();
+            }
 
             // Update username
             currentUser.setUsername(newUsername);
@@ -98,6 +105,7 @@ public class UserController {
     @PutMapping("/api/user/update-display-name")
     public SimpleResponseDTO updateDisplayName(@RequestParam String newDisplayName) {
         try {
+            System.out.println("Updating display name"+ newDisplayName);
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
                 return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
@@ -106,6 +114,12 @@ public class UserController {
             User user = userRepository.findByUsername(loggedInUser.getUsername());
             if (user == null) {
                 return SimpleResponseDTO.builder().success(false).message("User not found").build();
+            }
+            if(newDisplayName.isEmpty()) {
+                return SimpleResponseDTO.builder().success(false).message("Empty display name").build();
+            }
+            if(newDisplayName.equals(user.getDisplayName())) {
+                return SimpleResponseDTO.builder().success(false).message("New display name is the same as the current display name").build();
             }
 
             user.setDisplayName(newDisplayName);
