@@ -15,10 +15,10 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -173,4 +173,82 @@ public class TransactionController {
         return Timestamp.valueOf(dateString + " 00:00:00");
     }
 
+    @GetMapping("/api/user/top-expenditures")
+    public HomePageDTO getTopExpenditures() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername());
+        if (user == null) {
+            return HomePageDTO.builder()
+                    .success(false)
+                    .message("User not found")
+                    .build();
+        }
+
+        List<Object[]> rawExpenditures = transactionRepository.findTopExpendituresByUserId(user.getId());
+        List<Map<String, Object>> expenditures = rawExpenditures.stream().map(result -> {
+            Map<String, Object> expenditureMap = new HashMap<>();
+            expenditureMap.put("tagId", ((Number) result[0]).longValue());
+            expenditureMap.put("totalExpenditure", result[1]);
+            expenditureMap.put("tagName", result[2]);
+            return expenditureMap;
+        }).collect(Collectors.toList());
+
+        return HomePageDTO.builder()
+                .success(true)
+                .message("Expenditures fetched successfully")
+                .data(expenditures)
+                .build();
+    }
+
+
+    @GetMapping("/api/user/weekly-finance-summary")
+    public HomePageDTO getWeeklyFinanceSummary() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername());
+        if (user == null) {
+            return HomePageDTO.builder()
+                    .success(false)
+                    .message("User not found")
+                    .build();
+        }
+
+        Timestamp oneWeekAgo = Timestamp.from(Instant.now().minus(7, ChronoUnit.DAYS));
+        List<Transaction> transactions = transactionRepository.findByUserIdAndTimestampAfter(user.getId(), oneWeekAgo);
+
+        final BigDecimal[] totalIncome = {BigDecimal.valueOf(0.0)};
+        final BigDecimal[] totalExpenditure = {BigDecimal.valueOf(0.0)};
+
+        transactions.stream()
+                .map(transaction -> {
+                    if ("INCOME".equals(transaction.getType().toString())) {
+                        totalIncome[0] = totalIncome[0].add(transaction.getValue());
+                    } else if ("EXPENDITURE".equals(transaction.getType().toString())) {
+                        totalExpenditure[0] = totalExpenditure[0].add(transaction.getValue());
+                    }
+
+                    return TransactionDTO.builder()
+                            .id(transaction.getId())
+                            .userId(transaction.getUserId())
+                            .tagId(transaction.getTagId())
+                            .tagId2(transaction.getTagId2())
+                            .type(transaction.getType().toString())
+                            .notes(transaction.getNotes())
+                            .value(transaction.getValue())
+                            .timestamp(transaction.getTimestamp())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        BigDecimal balance = totalIncome[0].subtract(totalExpenditure[0]);
+
+        // Adjust your HomePageDTO to include BigDecimal for totalIncome, totalExpenditure, and balance
+        return HomePageDTO.builder()
+                .success(true)
+                .message("Weekly finance summary fetched successfully")
+                // Ensure your HomePageDTO can accept BigDecimal for these fields
+                .totalIncome(totalIncome[0])
+                .totalExpenditure(totalExpenditure[0])
+                .balance(balance)
+                .build();
+    }
 }
