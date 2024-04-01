@@ -109,4 +109,31 @@ public class SecondaryTagController {
 
     }
 
+    @GetMapping("/api/user-all-secondary-tags")
+    public SecondaryTagDTO getAllUserSecondaryTags() {
+        SecondaryTagDTO output = SecondaryTagDTO.builder().build();
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                User user = userRepository.findByUsername(userDetails.getUsername());
+
+                if (user != null) {
+                    List<SecondaryTag> userSecondaryTags = secondaryTagRepository.findAllByUserId(user.getId());
+                    output.setSecondaryTags(userSecondaryTags);
+                    output.setLoggedIn(true);
+                    return output;
+                } else {
+                    throw new IllegalStateException("User not found");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching user's secondary tags: " + e.toString());
+        }
+
+        output.setLoggedIn(false);
+        return output;
+    }
+
+
 }
