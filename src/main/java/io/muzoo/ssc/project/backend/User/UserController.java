@@ -74,28 +74,28 @@ public class UserController {
             // Fetch the current user by username
             User currentUser = userRepository.findByUsername(currentUsername);
             if (currentUser == null) {
-                return SimpleResponseDTO.builder().success(false).message("User not found").build();
+                return SimpleResponseDTO.builder().success(false).message("User not found.").build();
             }
 
             // Check if the new username is already taken
             User existingUser = userRepository.findByUsername(newUsername);
             if (existingUser != null) {
-                return SimpleResponseDTO.builder().success(false).message("Username already taken").build();
+                return SimpleResponseDTO.builder().success(false).message("Username already taken.").build();
             }
             if (newUsername.equals(currentUsername)) {
-                return SimpleResponseDTO.builder().success(false).message("New username is the same as the current username").build();
+                return SimpleResponseDTO.builder().success(false).message("New username is the same as the current username.").build();
             }
             if (newUsername.isEmpty()) {
-                return SimpleResponseDTO.builder().success(false).message("Empty Username").build();
+                return SimpleResponseDTO.builder().success(false).message("Empty Username.").build();
             }
 
             // Update username
             currentUser.setUsername(newUsername);
             userRepository.save(currentUser);
 
-            return SimpleResponseDTO.builder().success(true).message("Username updated successfully").build();
+            return SimpleResponseDTO.builder().success(true).message("Username updated successfully.").build();
         } else {
-            return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
+            return SimpleResponseDTO.builder().success(false).message("User is not logged in.").build();
         }
     }
 
@@ -104,25 +104,25 @@ public class UserController {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
-                return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
+                return SimpleResponseDTO.builder().success(false).message("User is not logged in.").build();
             }
 
             User user = userRepository.findByUsername(loggedInUser.getUsername());
             if (user == null) {
-                return SimpleResponseDTO.builder().success(false).message("User not found").build();
+                return SimpleResponseDTO.builder().success(false).message("User not found.").build();
             }
             if(newDisplayName.isEmpty()) {
-                return SimpleResponseDTO.builder().success(false).message("Empty display name").build();
+                return SimpleResponseDTO.builder().success(false).message("Empty display name.").build();
             }
             if(newDisplayName.equals(user.getDisplayName())) {
-                return SimpleResponseDTO.builder().success(false).message("New display name is the same as the current display name").build();
+                return SimpleResponseDTO.builder().success(false).message("New display name is the same as the current display name.").build();
             }
 
             user.setDisplayName(newDisplayName);
             userRepository.save(user);
-            return SimpleResponseDTO.builder().success(true).message("Display name updated successfully").build();
+            return SimpleResponseDTO.builder().success(true).message("Display name updated successfully.").build();
         } catch (Exception e) {
-            return SimpleResponseDTO.builder().success(false).message("Error updating display name").build();
+            return SimpleResponseDTO.builder().success(false).message("Error updating display name.").build();
         }
     }
 
@@ -132,21 +132,24 @@ public class UserController {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
-                return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
+                return SimpleResponseDTO.builder().success(false).message("User is not logged in.").build();
             }
 
             User user = userRepository.findByUsername(loggedInUser.getUsername());
             if (user == null) {
-                return SimpleResponseDTO.builder().success(false).message("User not found").build();
+                return SimpleResponseDTO.builder().success(false).message("User not found.").build();
             }
             if (!newPassword.equals(confirmPassword)) {
-                return SimpleResponseDTO.builder().success(false).message("Passwords do not match").build();
+                return SimpleResponseDTO.builder().success(false).message("Passwords do not match.").build();
+            }
+            if(newPassword.isEmpty()) {
+                return SimpleResponseDTO.builder().success(false).message("Cannot have empty password.").build();
             }
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
-            return SimpleResponseDTO.builder().success(true).message("Password updated successfully").build();
+            return SimpleResponseDTO.builder().success(true).message("Password updated successfully.").build();
         } catch (Exception e) {
-            return SimpleResponseDTO.builder().success(false).message("Error updating password").build();
+            return SimpleResponseDTO.builder().success(false).message("Error updating password.").build();
         }
     }
 
@@ -155,12 +158,12 @@ public class UserController {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
-                return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
+                return SimpleResponseDTO.builder().success(false).message("User is not logged in.").build();
             }
 
             User user = userRepository.findByUsername(loggedInUser.getUsername());
             if (user == null) {
-                return SimpleResponseDTO.builder().success(false).message("User not found").build();
+                return SimpleResponseDTO.builder().success(false).message("User not found.").build();
             }
 
             if (!avatarFile.isEmpty()) {
@@ -179,7 +182,7 @@ public class UserController {
                     // After successfully uploading the new avatar, delete the old avatar from S3
                     storageService.deleteFile(oldAvatarId);
 
-                    return SimpleResponseDTO.builder().success(true).message("Avatar updated successfully").build();
+                    return SimpleResponseDTO.builder().success(true).message("Avatar updated successfully.").build();
                 } else {
                     // Handle the case where the current avatar is the default one
                     String newAvatarId = storageService.uploadFile(avatarFile, user.getUsername());
@@ -189,7 +192,7 @@ public class UserController {
                     return SimpleResponseDTO.builder().success(true).message("Default avatar retained, new avatar uploaded successfully.").build();
                 }
             } else {
-                return SimpleResponseDTO.builder().success(false).message("Avatar file is empty").build();
+                return SimpleResponseDTO.builder().success(false).message("Avatar file is empty.").build();
             }
         } catch (Exception e) {
             return SimpleResponseDTO.builder().success(false).message("Error updating avatar: " + e.getMessage()).build();
@@ -200,18 +203,18 @@ public class UserController {
     public SimpleResponseDTO checkPassword(@RequestParam String password) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
-            return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
+            return SimpleResponseDTO.builder().success(false).message("User is not logged in.").build();
         }
 
         User user = userRepository.findByUsername(loggedInUser.getUsername());
         if (user == null) {
-            return SimpleResponseDTO.builder().success(false).message("User not found").build();
+            return SimpleResponseDTO.builder().success(false).message("User not found.").build();
         }
 
         if (passwordEncoder.matches(password, user.getPassword())) {
-            return SimpleResponseDTO.builder().success(true).message("You can edit your profile").build();
+            return SimpleResponseDTO.builder().success(true).message("You can edit your profile.").build();
         } else {
-            return SimpleResponseDTO.builder().success(false).message("Password does not match. Cannot edit profile").build();
+            return SimpleResponseDTO.builder().success(false).message("Password does not match. Cannot edit profile.").build();
         }
     }
 
