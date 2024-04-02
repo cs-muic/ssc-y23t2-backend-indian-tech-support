@@ -127,7 +127,7 @@ public class InitApplicationRunner implements ApplicationRunner {
                 transaction.setValue(BigDecimal.valueOf(69.0));
                 try {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-                    Timestamp timestamp = Timestamp.valueOf("2024-03-02 01:02:03.123456789");
+                    Timestamp timestamp = Timestamp.valueOf("2024-04-01 01:02:03.123456789");
                     transaction.setTimestamp(timestamp);
                 } catch(Exception e) { //this generic but you can control another types of exception
                     // look the origin of exception
@@ -144,7 +144,7 @@ public class InitApplicationRunner implements ApplicationRunner {
                 transaction.setValue(BigDecimal.valueOf(65.0));
                 try {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-                    Timestamp timestamp = Timestamp.valueOf("2024-03-02 01:02:03.123456789");
+                    Timestamp timestamp = Timestamp.valueOf("2024-04-01 01:02:03.123456789");
                     transaction.setTimestamp(timestamp);
                 } catch(Exception e) { //this generic but you can control another types of exception
                     // look the origin of exception
