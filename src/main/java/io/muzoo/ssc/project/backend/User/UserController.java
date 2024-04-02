@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -68,7 +65,7 @@ public class UserController {
 
     @PutMapping("/api/user/update-username")
     public SimpleResponseDTO updateUsername(@RequestParam String newUsername) {
-        System.out.println(newUsername + "Updating username");
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal != null && principal instanceof UserDetails userDetails) {
@@ -105,7 +102,6 @@ public class UserController {
     @PutMapping("/api/user/update-display-name")
     public SimpleResponseDTO updateDisplayName(@RequestParam String newDisplayName) {
         try {
-            System.out.println("Updating display name"+ newDisplayName);
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
                 return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
@@ -197,6 +193,25 @@ public class UserController {
             }
         } catch (Exception e) {
             return SimpleResponseDTO.builder().success(false).message("Error updating avatar: " + e.getMessage()).build();
+        }
+    }
+
+    @GetMapping("api/user/password-check")
+    public SimpleResponseDTO checkPassword(@RequestParam String password) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof org.springframework.security.core.userdetails.User loggedInUser)) {
+            return SimpleResponseDTO.builder().success(false).message("User is not logged in").build();
+        }
+
+        User user = userRepository.findByUsername(loggedInUser.getUsername());
+        if (user == null) {
+            return SimpleResponseDTO.builder().success(false).message("User not found").build();
+        }
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            return SimpleResponseDTO.builder().success(true).message("You can edit your profile").build();
+        } else {
+            return SimpleResponseDTO.builder().success(false).message("Password does not match. Cannot edit profile").build();
         }
     }
 
