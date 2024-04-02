@@ -76,7 +76,7 @@ public class InitApplicationRunner implements ApplicationRunner {
             user.setPassword(passwordEncoder.encode("admin"));
             user.setDisplayName("Admin");
             user.setRole("ADMIN");
-            user.setAvatarId("admin.jpeg");
+            user.setAvatarId("admin.png");
             userRepository.save(user);
             List<String> mainTags = Arrays.asList("Income", "Housing", "Utilities", "Food" ,"Transportation",
                     "Healthcare", "Insurance", "Personal Spending", "Recreation & Entertainment",
@@ -94,8 +94,8 @@ public class InitApplicationRunner implements ApplicationRunner {
             tagMappings.put("Utilities", Arrays.asList(6, 7, 8));
             tagMappings.put("Food", Arrays.asList(9, 10, 11));
             tagMappings.put("Transportation", Arrays.asList(12, 13, 14));
-            tagMappings.put("Healthcare", Arrays.asList(15, 16));
-            tagMappings.put("Insurance", Arrays.asList(17, 18, 19, 20));
+            tagMappings.put("Healthcare", Arrays.asList(15, 16, 17));
+            tagMappings.put("Insurance", Arrays.asList(18, 19, 20));
             tagMappings.put("Personal Spending", Arrays.asList(21, 22, 23));
             tagMappings.put("Recreation & Entertainment", Arrays.asList(24, 25, 26));
             tagMappings.put("Savings & Investments", Arrays.asList(27, 28, 29));

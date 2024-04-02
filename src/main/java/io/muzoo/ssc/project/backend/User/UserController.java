@@ -43,7 +43,7 @@ public class UserController {
             if (avatarFile != null && !avatarFile.isEmpty()) {
                 avatarId = storageService.uploadFile(avatarFile, username);
             } else {
-                avatarId = "admin.jpeg";
+                avatarId = "admin.png";
             }
 
             User user = new User();
@@ -173,7 +173,7 @@ public class UserController {
                 // Proceed with updating the avatar only if it's not the default one
                 // Assuming 'admin.jpeg' is stored directly at the root of the bucket
                 // and you're storing the complete key in the avatarId field
-                if (oldAvatarId != null && !oldAvatarId.equals("admin.jpeg")) {
+                if (oldAvatarId != null && !oldAvatarId.equals("admin.png")) {
                     // Upload the new avatar and update the user's avatar ID
                     String newAvatarId = storageService.uploadFile(avatarFile, user.getUsername());
                     user.setAvatarId(newAvatarId);
