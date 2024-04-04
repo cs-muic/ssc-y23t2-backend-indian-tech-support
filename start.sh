@@ -7,7 +7,7 @@ docker build -t api-service .
 docker run -d \
   --restart unless-stopped \
   --env-file ./ignore/backend.env \
-  --name api-service \
+  --name api_service \
   -p 8081:8081 \
   --link maria_db:app_db \
   -v "$(pwd):/app" \
