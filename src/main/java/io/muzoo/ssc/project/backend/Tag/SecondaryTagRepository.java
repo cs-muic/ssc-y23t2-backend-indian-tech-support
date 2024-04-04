@@ -10,6 +10,9 @@ public interface SecondaryTagRepository extends JpaRepository<SecondaryTag, Long
     List<SecondaryTag> findAllByTagId(long id);
     List<Tag> findAllById(long id);
 
-    @Query("SELECT st FROM SecondaryTag st INNER JOIN Tag t ON st.tagId = t.id WHERE t.userId = :userId AND st.isDeleted = false")
+    @Query("SELECT st FROM SecondaryTag st\n" +
+            "INNER JOIN Tag t ON st.tagId = t.id\n" +
+            "WHERE st.isDeleted = false AND (t.userId = :userId OR t.userId = 1)\n" +
+            "GROUP BY st.id\n")
     List<SecondaryTag> findAllByUserId(Long userId);
 }
