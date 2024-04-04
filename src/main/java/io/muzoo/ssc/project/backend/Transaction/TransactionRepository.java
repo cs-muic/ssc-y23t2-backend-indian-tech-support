@@ -38,7 +38,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>{
     @Query(value = "SELECT t.tag_id, SUM(t.value) AS totalExpenditure, tg.tag_name\n" +
             "FROM `transaction` t\n" +
             "         JOIN `tag` tg ON t.tag_id = tg.id\n" +
-            "WHERE t.user_id = 1 AND t.type = 0 AND tg.is_deleted = 0\n" +
+            "WHERE t.user_id = :userId AND t.type = 1 AND tg.is_deleted = 0\n" +
             "GROUP BY t.tag_id\n" +
             "ORDER BY totalExpenditure DESC\n" +
             "LIMIT 5", nativeQuery = true)
